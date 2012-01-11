@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+  <pluginNames />
+  <plugin name="Plugin Manager">
+    <ansiVersion>1.0.0</ansiVersion>
+    <unicodeVersion>1.0.0</unicodeVersion>
+    <description>Provides the Rnw syntax a.k.a. Sweave which combines latex and R.</description>
+    <author>Andrew Redd</author>
+    <homepage></homepage>
+    <sourceUrl>http://github.com/halpo/NppRnwLang</sourceUrl>
+    <latestUpdate>Initial Release</latestUpdate>
+    <install><!--  commented because invalid
+      <unicode>
+        <download>http://downloads.sourceforge.net/project/npppluginmgr/v1.0.8/PluginManager_1.0.8_UNI.zip</download>
+        <copy from="plugins\PluginManager.dll" to="$PLUGINDIR$\" validate="true"/>
+        <copy from="updater\gpup.exe" to="$NPPDIR$\updater" validate="true" replace="true" isGpup="true"/>
+      </unicode>
+      <ansi>
+        <download>http://downloads.sourceforge.net/project/npppluginmgr/v1.0.8/PluginManager_1.0.8_ANSI.zip</download>
+        <copy from="plugins\PluginManager.dll" to="$PLUGINDIR$\" validate="true"/>
+        <copy from="updater\gpup.exe" to="$NPPDIR$\updater" validate="true" replace="true" isGpup="true"/>
+      </ansi>
+    --></install>
+  </plugin>
+</plugins>

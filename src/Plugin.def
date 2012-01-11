@@ -1,0 +1,13 @@
+; Plugin.def
+; Copyright (C) 2012 Andrew Redd
+LIBRARY	RNWLANGLIB
+DATA MULTIPLE SHARED READWRITE LOADONCALL
+CODE LOADONCALL
+
+EXPORTS
+	GetLexerCount = GetLexerCount
+	GetLexerName = GetLexerName
+	GetLexerStatusText = GetLexerStatusText
+	GetLexerFactory = GetLexerFactory
+	Lex = NppLex
+	Fold = NppFold

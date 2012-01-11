@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<NotepadPlus>
+    <Languages>
+        <!-- Comments are the comment that is used from the context (right click) menu when you tell np++ to comment a line. -->
+        <!-- You can change these to C++ comments instead of Lua ones if you want. -->
+        <Language name="Rnw" ext="rnw" commentLine="" commentStart="" commentEnd="">
+            <!-- name must be the corresponding WordsStyle keywordClass below. -->
+            <!-- instruction words must be "0" for folding to work right. -->
+            <Keywords name="0"></Keywords>
+            <Keywords name="1"></Keywords>
+            <Keywords name="2"></Keywords>
+            <Keywords name="3"></Keywords>
+            <Keywords name="4"></Keywords>
+            <Keywords name="5"></Keywords>
+            <Keywords name="6"></Keywords>
+            <Keywords name="7"></Keywords>
+            <Keywords name="8"></Keywords>
+        </Language>
+    </Languages>
+    <LexerStyles>
+        <!-- ext is the "user defined" one that you set within Notepad++. -->
+        <LexerType name="Rnw" desc="R/Sweave" excluded="no" ext="">
+            <WordsStyle name="DEFAULT"            styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="LUA COMMENT BLOCKS" styleID="1"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="CPP COMMENT BLOCKS" styleID="2"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="LUA COMMENT LINES"  styleID="3"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="CPP COMMENT LINES"  styleID="4"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="NUMBERS"            styleID="5"  fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="OPERATORS"          styleID="6"  fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="STRINGS"            styleID="8"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="CHARACTERS"         styleID="9"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="LITERAL STRINGS"    styleID="11" fgColor="95004A" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <!-- name is what shows up in the styler config for that style. -->
+            <!-- styleID must be 20 through 29 and must be 20 plus the value of the keywordClass. -->
+            <!-- keywordClass can be a number between 0 and 8 and corresponds with the group of Keywords above. -->
+            <WordsStyle name="INSTRUCTION WORDS"  styleID="20" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="0" />
+            <WordsStyle name="GLOBAL CONSTANTS"   styleID="21" fgColor="808000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="1" />
+            <WordsStyle name="GLOBAL FUNCTIONS"   styleID="22" fgColor="0080C0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="2" />
+            <WordsStyle name="SCRIPTED VARIABLES" styleID="23" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" keywordClass="3" />
+            <WordsStyle name="SCRIPTED FUNCTIONS" styleID="24" fgColor="0000A0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="4" />
+            <WordsStyle name="LIBRARIES"          styleID="25" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="5" />
+            <WordsStyle name="LIBRARY CALLS"      styleID="26" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="6" />
+            <WordsStyle name="OBJECT FUNCTIONS"   styleID="27" fgColor="804040" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="7" />
+            <WordsStyle name="RED FLAGS"          styleID="28" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="8" />
+        </LexerType>
+	</LexerStyles>
+</NotepadPlus>
