@@ -8,6 +8,8 @@ Sweave
 ------
 Sweave is essentially two languages, TeX and R/S, where chunks of R code are embedded into a LaTeX document to provide reproducible report and article generation.  In the current state a User must choose to use either the R lexer or the Latex lexer, which in my opinion could use some improvement.  With RnwLang I hope to produce a Lexer that combines both and highlights appropriatly.
 
+For building Sweave files I highly recommend Yihui's package [knitr](http://github.com/yihui/knitr).
+
 Building
 --------
 I build with the [TDM](http://tdm-gcc.tdragon.net/) port of GCC which plays slightly nicer with the windows SDK, which is required or some components.

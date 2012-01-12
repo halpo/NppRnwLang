@@ -25,7 +25,8 @@
 #include <cassert>
 #include <algorithm>
 #include "unidef.h"
-  
+#include "deparse_wm_msg.h"
+
   #ifndef _WIN32_WINNT
     #define _WIN32_WINNT 0x0501
   #endif
@@ -134,23 +135,31 @@ namespace RnwLang
               ShortcutKey * Key = NULL);
     
   };
-	class LexerRnw : public LexerBase {
+  class PluginInfo{
   private:
+    PluginInfo(PluginInfo const &);
+    void operator=(PluginInfo const&);
     vector<MenuItem> MenuItems;
   protected:
     NppData nppData;
-	public:
-		LexerRnw();
-		void SCI_METHOD Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-		void SCI_METHOD Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-		static ILexer *LexerFactory();
+  public:
+    PluginInfo();
+    void setInfo(NppData notpadPlusData);
     FuncItem * getMenuItems();
     int numMenuItems();
-    void setInfo(NppData notpadPlusData);
+    HWND nppHandle();
+  };
+	class LexerRnw : public LexerBase {
+	public:
+		LexerRnw();
+		~LexerRnw();
+		SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+    SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+		static ILexer *LexerFactory();
 	};
 
-  // Primary Class used as a Singeton
-  extern LexerRnw Rnw;
+  // PluginInfo Class as a Singeton
+  extern PluginInfo Plugin;
   
 	void Colourise_Doc(unsigned int startPos, int length, int initStyle, WordList *keywordlists[], Accessor &styler);
 	void Fold_Doc(unsigned int startPos, int length, int initStyle, Accessor &styler);

@@ -28,9 +28,10 @@ LexerRnw Rnw;
 
 LexerRnw::LexerRnw(){
   dbg << rnwmsg << "in " << thisfunc << endl;
-  MenuItem mi_about(TEXT("&About RnwLexer"), &aboutDlg);
-  MenuItems.push_back(mi_about);
 }
+LexerRnw::~LexerRnw(){
+  dbg << rnwmsg << "in " << thisfunc << "LexerRnw DESTRUCTED!!"  << endl;
+}		
 ILexer* LexerRnw::LexerFactory() {
   dbg << rnwmsg << "in " << thisfunc << endl;
   try {
@@ -62,16 +63,6 @@ void SCI_METHOD LexerRnw::Fold(unsigned int startPos, int length, int initStyle,
 		//! Should not throw into caller as may be compiled with different compiler or options
 		pAccess->SetErrorStatus(SC_STATUS_FAILURE);
 	}
-}
-FuncItem * LexerRnw::getMenuItems(){
-  return reinterpret_cast<FuncItem*>(&MenuItems[0]);
-}
-int LexerRnw::numMenuItems(){
-  return MenuItems.size();
-}
-void LexerRnw::setInfo(NppData notpadPlusData){ 
-  dbg << rnwmsg << "in " << thisfunc << endl;
-  nppData = notpadPlusData; 
 }
 } // end namespace RnwLang
 

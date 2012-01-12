@@ -82,6 +82,7 @@ PLUGIN_OBJECTS = \
 	RnwLang.o \
 	RnwRes.o \
 	RnwLex.o \
+	deparse_wm_msg.o \
 	dbgstream.o
 $(PLUGIN_OBJECTS): $(SRC)/RnwLang.h
 OBJECTS = $(PLUGIN_OBJECTS) $(LOBJS)
@@ -172,3 +173,8 @@ RnwLangLib.dll: $(OBJECTS)
 	dlltool -l $@ -mi386 $(OBJECTS) --no-export-all-symbols --add-stdcall-underscore 
 dbgtest.exe: ../src/dbgstream/dbgstream.cpp
 	$(CC) -m32 -mwindows -o $@ $(STRIPFLAG) $< $(CXXFLAGS) -DTEST_MAIN
+deparseWM_MSG.exe: deparse_wm_msg.cpp
+	$(CC) -m32 -mwindows -o $@ $(STRIPFLAG) $< $(CXXFLAGS) -DTEST_MAIN
+	
+	
+	

@@ -24,22 +24,19 @@ using namespace std;
 
 namespace RnwLang
 {
-NppData nppData;
-
 static const generic_string PLUGIN_NAME      = TEXT("&Rnw Lexer");
 static const std::string LEXER_NAME          = "RnwLang";
 static const generic_string LEXER_STATUS_TEXT= TEXT("R/Sweave Lexer");
 static const generic_string aboutMenuItem    = TEXT("&About R/Sweave");
 void aboutDlg()
 {
-  ::MessageBox(nppData._nppHandle,
+  ::MessageBox(Plugin.nppHandle(),
     TEXT("R/Sweave Syntax Plugin\n")
     TEXT("http://github.com/halpo/NppRnwLang\n\n")
     TEXT("               Author: Andrew Redd\n")
     TEXT("                        (aka halpo)"),
     TEXT("<- About ->"),
     MB_OK);
-}
 }
 RnwLang::MenuItem::MenuItem(
               generic_string name /// Item Name
@@ -53,6 +50,27 @@ RnwLang::MenuItem::MenuItem(
   _init2Check=(i2c);
   _pShKey=(Key);
 	_tcsncpy(_itemName, name.c_str(), nbChar);
+}
+
+PluginInfo::PluginInfo(){
+  dbg << rnwmsg << "in " << thisfunc << endl;
+  MenuItem mi_about(TEXT("&About RnwLexer"), &aboutDlg);
+  MenuItems.push_back(mi_about);
+}
+FuncItem * PluginInfo::getMenuItems(){
+  return reinterpret_cast<FuncItem*>(&MenuItems[0]);
+}
+int PluginInfo::numMenuItems(){
+  return MenuItems.size();
+}
+void PluginInfo::setInfo(NppData notpadPlusData){ 
+  dbg << rnwmsg << "in " << thisfunc << endl;
+  nppData = notpadPlusData; 
+}
+HWND PluginInfo::nppHandle(){
+  return nppData._nppHandle;
+}
+PluginInfo Plugin;
 }
 using namespace RnwLang;
 
@@ -96,16 +114,23 @@ __declspec(dllexport) const TCHAR * getName() {
 }
 void setInfo(NppData notpadPlusData){ 
   dbg << rnwmsg << "in " << thisfunc << endl;
-  Rnw.setInfo(notpadPlusData); 
+  Plugin.setInfo(notpadPlusData); 
 }
 __declspec(dllexport) FuncItem * getFuncsArray(int *nbF){
   dbg << rnwmsg << thisfunc << endl;
-	*nbF = Rnw.numMenuItems();
-	return Rnw.getMenuItems();
+	*nbF = Plugin.numMenuItems();
+	return Plugin.getMenuItems();
 }
 __declspec(dllexport) void beNotified(SCNotification * /*notifyCode*/) {}
 __declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam) {
-  dbg << rnwmsg << "Message received " << Message  << endl;
+  switch(Message){
+  case WM_MOVE:
+  case WM_MOVING:
+  case WM_SIZE:
+    break;
+  default:
+    dbg << rnwmsg << "Message received " << deparseMsg(Message)  << endl;
+  }
   return TRUE; 
 }
 EXT_LEXER_DECL int  GetLexerCount() { 
@@ -125,7 +150,8 @@ EXT_LEXER_DECL void GetLexerStatusText(unsigned int /*Index*/, TCHAR *desc, int 
     _tcsncpy(desc, LEXER_STATUS_TEXT.c_str(), buflength);
 	}
 }
-LexerFactoryFunction SCI_METHOD GetLexerFactory(unsigned int index) {
+
+__declspec( dllexport ) LexerFactoryFunction GetLexerFactory(unsigned int index) {
   dbg << rnwmsg << "in " << thisfunc << " index=" << index << endl;
 	if (index == 0)
 		return &LexerRnw::LexerFactory;
@@ -134,4 +160,3 @@ LexerFactoryFunction SCI_METHOD GetLexerFactory(unsigned int index) {
 }
 
 } // End extern "C"
-
