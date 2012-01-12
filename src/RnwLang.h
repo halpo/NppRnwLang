@@ -153,9 +153,11 @@ namespace RnwLang
 	public:
 		LexerRnw();
 		~LexerRnw();
+    void SCI_METHOD Release();
 		SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
     SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-		static ILexer *LexerFactory();
+		static ILexer* LexerFactory();
+    void* forceILexerInterface();
 	};
 
   // PluginInfo Class as a Singeton

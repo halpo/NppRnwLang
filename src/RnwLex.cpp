@@ -31,11 +31,12 @@ LexerRnw::LexerRnw(){
 }
 LexerRnw::~LexerRnw(){
   dbg << rnwmsg << "in " << thisfunc << "LexerRnw DESTRUCTED!!"  << endl;
-}		
+}
 ILexer* LexerRnw::LexerFactory() {
   dbg << rnwmsg << "in " << thisfunc << endl;
   try {
-    return &Rnw;//new LexerRnw;
+    LexerRnw* lex = new LexerRnw;
+    return dynamic_cast<ILexer*>(lex);//new LexerRnw;
   } catch (...) {
     dbg << rnwerr << thisfunc << (" Unhandled Exception Caught") << endl;
     // Should not throw into caller as may be compiled with different compiler or options
@@ -64,6 +65,40 @@ void SCI_METHOD LexerRnw::Fold(unsigned int startPos, int length, int initStyle,
 		pAccess->SetErrorStatus(SC_STATUS_FAILURE);
 	}
 }
+void LexerRnw::Release(){
+  //TODO: Add cleanup code with auto_ptr.
+}
+void* LexerRnw::forceILexerInterface(){
+  /*! force ILexer Interface
+   *  
+   *  according to https://sourceforge.net/apps/mediawiki/notepad-plus/index.php?title=Plugin_Development#The_common_plugin_interface
+   * If you are not using C++ to develop the lexer, you need to manufacture an ILexer 
+   * object the address is to be returned by the various fatory functions. However, 
+   * this is easy enough:
+   * 
+   * 1. Define an array of pointers, containing the addresses of the functions listed in 
+   *    the section above. They must appear in the array in exactly the same order as they 
+   *    do in the interface description.
+   * 
+   * 2. Define a variable of a pointer type, and set it to the address of the array just
+   *    created. This variable is the ILexer object.
+   */
+  
+  vector<void*> *iface = new vector<void*>(11);
+  (*iface)[0]  = reinterpret_cast<void*>(&LexerRnw::Version);
+  (*iface)[1]  = reinterpret_cast<void*>(&LexerRnw::Release);
+  (*iface)[2]  = reinterpret_cast<void*>(&LexerRnw::PropertyNames);
+  (*iface)[3]  = reinterpret_cast<void*>(&LexerRnw::PropertyType);
+  (*iface)[4]  = reinterpret_cast<void*>(&LexerRnw::DescribeProperty);
+  (*iface)[5]  = reinterpret_cast<void*>(&LexerRnw::PropertySet);
+  (*iface)[6]  = reinterpret_cast<void*>(&LexerRnw::DescribeWordListSets);
+  (*iface)[7]  = reinterpret_cast<void*>(&LexerRnw::WordListSet);
+  (*iface)[8]  = reinterpret_cast<void*>(&LexerRnw::Lex);
+  (*iface)[9]  = reinterpret_cast<void*>(&LexerRnw::Fold);
+  (*iface)[10] = reinterpret_cast<void*>(&LexerRnw::PrivateCall);
+  return NULL;
+}
+
 } // end namespace RnwLang
 
 
