@@ -9,7 +9,7 @@
     <homepage></homepage>
     <sourceUrl>http://github.com/halpo/NppRnwLang</sourceUrl>
     <latestUpdate>Initial Release</latestUpdate>
-    <install><!--  commented because invalid
+    <install> <!--  commented because invalid
       <unicode>
         <download>http://downloads.sourceforge.net/project/npppluginmgr/v1.0.8/PluginManager_1.0.8_UNI.zip</download>
         <copy from="plugins\PluginManager.dll" to="$PLUGINDIR$\" validate="true"/>
@@ -20,6 +20,6 @@
         <copy from="plugins\PluginManager.dll" to="$PLUGINDIR$\" validate="true"/>
         <copy from="updater\gpup.exe" to="$NPPDIR$\updater" validate="true" replace="true" isGpup="true"/>
       </ansi>
-    --></install>
+    --> </install>
   </plugin>
 </plugins>

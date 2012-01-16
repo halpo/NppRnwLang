@@ -17,7 +17,7 @@ RnwLang.cpp
 RnwLang.h
 : All plugin header definition and inclusions
 
-RnwLex.cpp
+LexRnw.cpp
 : Lexer highlight and folding implimentation
 
 unidef.h

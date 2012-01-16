@@ -4,5 +4,6 @@
 using std::string;
 namespace RnwLang{
 string deparseMsg(int);
+string deparseStyle(int);
 }
 #endif // DEPARSE_WM_MSG_H_

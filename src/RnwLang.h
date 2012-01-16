@@ -22,11 +22,6 @@
 
 #if 1 // Includes Section
 
-#include <cassert>
-#include <algorithm>
-#include "unidef.h"
-#include "deparse_wm_msg.h"
-
   #ifndef _WIN32_WINNT
     #define _WIN32_WINNT 0x0501
   #endif
@@ -52,7 +47,7 @@
   #include <map>
   #include <memory>
   #include <algorithm>
-  #include <exception>	
+  #include <exception>
   #include <string>
 
   // Windows Header Files
@@ -80,13 +75,20 @@
   #include "StyleContext.h"
   #include "CharacterSet.h"
 
+  // This project Includes
+  #include <cassert>
+  #include <algorithm>
+  #include "unidef.h"
+  #include "lexers.h"
   #include "dbgstream.h"
+  #include "deparse_wm_msg.h"
+  
   #define thisfunc __PRETTY_FUNCTION__
-#ifdef UNICODE
-	#define generic_strncpy_s wcsncpy_s
-#else
-	#define generic_strncpy_s strncpy_s
-#endif
+  #ifdef UNICODE
+    #define generic_strncpy_s wcsncpy_s
+  #else
+    #define generic_strncpy_s strncpy_s
+  #endif
 
 #endif //*/ end includes/defines section
 using std::vector;
@@ -98,33 +100,7 @@ namespace RnwLang
   static const string rnwmsg = "RnwLang:MSG:";
   static const string rnwerr = "RnwLang:ERROR:";
 	void aboutDlg();
-  
-  
-	const int DEFAULT = 0;
 
-	const int LUA_COMMENT = 1;
-	const int CPP_COMMENT = 2;
-	const int LUA_COMMENTLINE = 3;
-	const int CPP_COMMENTLINE = 4;
-
-	const int NUMBER = 5;
-	const int OPERATOR = 6;
-	const int IDENTIFIER = 7;
-
-	const int STRING = 8;
-	const int CHARACTER = 9;
-	const int STRINGEOL = 10;
-	const int LITERALSTRING = 11;
-
-	const int WORD0 = 20;
-	const int WORD1 = 21;
-	const int WORD2 = 22;
-	const int WORD3 = 23;
-	const int WORD4 = 24;
-	const int WORD5 = 25;
-	const int WORD6 = 26;
-	const int WORD7 = 27;
-	const int WORD8 = 28;
 
   class MenuItem : public FuncItem{
   public:
@@ -133,7 +109,7 @@ namespace RnwLang
               int cmdID = NULL,
               bool i2c = false,
               ShortcutKey * Key = NULL);
-    
+
   };
   class PluginInfo{
   private:
@@ -142,29 +118,32 @@ namespace RnwLang
     vector<MenuItem> MenuItems;
   protected:
     NppData nppData;
+    HWND _pHandle;
   public:
     PluginInfo();
     void setInfo(NppData notpadPlusData);
     FuncItem * getMenuItems();
     int numMenuItems();
     HWND nppHandle();
+    HWND pluginHandle();
+    void setPluginHandle(HWND);
   };
+
+  namespace Lexers{ namespace Rnw{
 	class LexerRnw : public LexerBase {
+  private:
+    PropSetSimple R_props, TeX_props, Rnw_props;
 	public:
 		LexerRnw();
 		~LexerRnw();
-    void SCI_METHOD Release();
 		SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
     SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
 		static ILexer* LexerFactory();
-    void* forceILexerInterface();
 	};
-
+  }} // namespace Lexers::Rnw
+  
   // PluginInfo Class as a Singeton
   extern PluginInfo Plugin;
-  
-	void Colourise_Doc(unsigned int startPos, int length, int initStyle, WordList *keywordlists[], Accessor &styler);
-	void Fold_Doc(unsigned int startPos, int length, int initStyle, Accessor &styler);
 }
 
 #endif  // RNWLANG_H

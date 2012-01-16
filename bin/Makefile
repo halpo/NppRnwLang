@@ -11,7 +11,7 @@ all: plugin
 
 SRC = ../src
 
-PLUGIN = RnwLexer_plugin.dll
+PLUGIN = LexRnw.dll
 SCINTILLA_SRC = ../Scintilla
 
 ### SCINTILLA OBJECTS #########
@@ -49,57 +49,35 @@ LOBJS = \
 	LexerSimple.o \
 	StyleContext.o \
 	WordList.o \
-	$(BASEOBJS)
-	# ScintillaWinL.o \
-	# ScintillaBaseL.o \
-# ScintillaBaseL.o: ScintillaBase.cxx Platform.h \
- # ILexer.h Scintilla.h SciLexer.h PropSetSimple.h \
- # SplitVector.h Partitioning.h RunStyles.h \
- # ContractionState.h CellBuffer.h CallTip.h \
- # KeyMap.h Indicator.h XPM.h LineMarker.h \
- # Style.h ViewStyle.h AutoComplete.h \
- # CharClassify.h Decoration.h Document.h \
- # Selection.h PositionCache.h Editor.h \
- # ScintillaBase.h LexAccessor.h Accessor.h \
- # LexerModule.h Catalogue.h
-	# $(CC) $(CXXFLAGS) -D SCI_LEXER -c $< -o $@
-
-# ScintillaWinL.o: ScintillaWin.cxx Platform.h \
- # ILexer.h Scintilla.h SplitVector.h \
- # Partitioning.h RunStyles.h ContractionState.h \
- # CellBuffer.h CallTip.h KeyMap.h Indicator.h \
- # XPM.h LineMarker.h Style.h AutoComplete.h \
- # ViewStyle.h CharClassify.h Decoration.h \
- # Document.h Selection.h PositionCache.h \
- # Editor.h ScintillaBase.h UniConversion.h \
- # LexAccessor.h Accessor.h \
- # LexerModule.h Catalogue.h
-	# $(CC) $(CXXFLAGS) -D SCI_LEXER -c $< -o $@
+	$(BASEOBJS)	
 ###  End Scintilla objects ###
 
+LEXERS = \
+	LexR.o \
+	LexTeX.o
 PLUGIN_DEF = $(SRC)/Plugin.def
 PLUGIN_OBJECTS = \
 	RnwLang.o \
 	RnwRes.o \
-	RnwLex.o \
+	LexRnw.o \
 	deparse_wm_msg.o \
-	dbgstream.o
+	dbgstream.o \
+	$(LEXERS)
 $(PLUGIN_OBJECTS): $(SRC)/RnwLang.h
 OBJECTS = $(PLUGIN_OBJECTS) $(LOBJS)
 
-vpath %.h $(SRC) $(SRC)/headers\
-		$(SCINTILLA_SRC)/src \
-		$(SCINTILLA_SRC)/include \
-		$(SCINTILLA_SRC)/lexlib
-vpath %.cpp $(SRC)
+vpath %.h   $(SRC) $(SRC)/headers\
+            $(SCINTILLA_SRC)/src \
+            $(SCINTILLA_SRC)/include \
+            $(SCINTILLA_SRC)/lexlib \
+            $(SRC)/dbgstream
+vpath %.cpp $(SRC) \
+            $(SRC)/dbgstream
 vpath %.cxx $(SCINTILLA_SRC)/src \
-		  $(SCINTILLA_SRC)/lexlib \
-		  $(SCINTILLA_SRC)/lexers \
-		  $(SCINTILLA_SRC)/win32
+            $(SCINTILLA_SRC)/lexlib \
+            $(SCINTILLA_SRC)/win32
 vpath %.rc $(SRC) $(SCINTILLA_SRC)/win32
 
-vpath %.h $(SRC)/dbgstream
-vpath %.cpp $(SRC)/dbgstream
 
 LDFLAGS=-shared -Wl,--enable-runtime-pseudo-reloc-v2 -mwindows -Wl,--add-stdcall-alias
 LIBS=-lstdc++ -limm32 -lole32 -luuid
@@ -109,10 +87,13 @@ INCLUDEDIRS = -I $(SCINTILLA_SRC)/include \
 		    -I $(SCINTILLA_SRC)/lexlib \
 		    -I $(SRC)/headers \
 		    -I $(SRC)/dbgstream
-
-#CPP_FLAGS = -m32 -fpermissive -fpic
-CXXBASEFLAGS = -m32 -Wall -Wno-missing-braces -Wno-char-subscripts \
-	-Wno-strict-overflow -pedantic $(INCLUDEDIRS) -fno-rtti  \
+		    
+# http://gcc.gnu.org/onlinedocs/gcc-4.4.3/gcc/Warning-Options.html#Warning-Options
+CHECK_FLAGS  = -Wall -Wextra -Wno-missing-braces -Wno-char-subscripts \
+               -Wno-strict-overflow -pedantic -Wno-unused-parameter
+SCI_CXXFLAGS = -DSCI_LEXER
+CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
+	$(INCLUDEDIRS) -fno-rtti  \
 	-march=i686 -mthreads
 
 # DEBUG

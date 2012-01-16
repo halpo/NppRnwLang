@@ -21,6 +21,7 @@
 #define EXT_LEXER_DECL __declspec( dllexport ) __stdcall
 
 using namespace std;
+using namespace RnwLang::Lexers::Rnw;
 
 namespace RnwLang
 {
@@ -54,7 +55,7 @@ RnwLang::MenuItem::MenuItem(
 
 PluginInfo::PluginInfo(){
   dbg << rnwmsg << "in " << thisfunc << endl;
-  MenuItem mi_about(TEXT("&About RnwLexer"), &aboutDlg);
+  MenuItem mi_about(TEXT("&About LexRnwer"), &aboutDlg);
   MenuItems.push_back(mi_about);
 }
 FuncItem * PluginInfo::getMenuItems(){
@@ -70,6 +71,13 @@ void PluginInfo::setInfo(NppData notpadPlusData){
 HWND PluginInfo::nppHandle(){
   return nppData._nppHandle;
 }
+void PluginInfo::setPluginHandle(HWND pHandle){
+  _pHandle=pHandle;
+}
+HWND PluginInfo::pluginHandle(){
+  return _pHandle;
+}
+
 PluginInfo Plugin;
 }
 using namespace RnwLang;
@@ -82,12 +90,13 @@ extern "C" { /// All the interface stuff
 /// NOTE: as of 1/10/2012 Notepad++ version 5.9.3 this function is not called when loading. 
 BOOL APIENTRY DllMain(  HANDLE hModule,      /// module handle, NOT USED
                         DWORD reasonForCall, /// Why the call 
-                        LPVOID lpReserved    /// NOT USED
+                        LPVOID               /// lpReserved NOT USED
 ){
 	switch (reasonForCall)
 	{
 	case DLL_PROCESS_ATTACH:
     dbg << rnwmsg << "DllMain:DLL_PROCESS_ATTACH" << endl;
+    Plugin.setPluginHandle( static_cast<HWND>(hModule));
 		break;
 	case DLL_THREAD_ATTACH:
     dbg << rnwmsg << "DllMain:DLL_THREAD_ATTACH" << endl;
@@ -122,10 +131,15 @@ __declspec(dllexport) FuncItem * getFuncsArray(int *nbF){
 	return Plugin.getMenuItems();
 }
 __declspec(dllexport) void beNotified(SCNotification * /*notifyCode*/) {}
-__declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam) {
+__declspec(dllexport) LRESULT messageProc(
+    UINT Message   /// Message ID
+  , WPARAM         /// wParam, NOT USED
+  , LPARAM         /// lParam, NOT USED
+) {
   switch(Message){
   case WM_MOVE:
   case WM_MOVING:
+  case WM_SIZING:
   case WM_SIZE:
     break;
   default:

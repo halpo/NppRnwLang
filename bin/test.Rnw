@@ -1,0 +1,29 @@
+\documentclass{article}
+
+
+\begin{document}
+some intro information
+
+<<code>>=
+{ # this is a comment
+
+  newfunction <- function(){
+
+  if(T){
+  
+  } else {
+  
+  }
+  
+
+  }
+  y<-2
+  x<-1
+}
+
+end function
+@
+summary information
+
+\end{document}
+

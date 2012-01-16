@@ -21,8 +21,10 @@
   #define _vstprintf      vswprintf
 
   #define _tscanf     wscanf
-
-
+  
+  #include <cwctype>
+  #define _tisspace   iswspace
+  
   //#define TCHAR wchar_t
 
 #else
@@ -49,5 +51,10 @@
   #define _tscanf     scanf
 
   #define TCHAR char
+
+  #include <cctype>  // for character checking
+  #define _tisspace   isspace
+  
+  
 #endif  // UNICODE
 #endif  // UNIDEF_H_
