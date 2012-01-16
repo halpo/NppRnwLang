@@ -140,6 +140,7 @@ namespace RnwLang
     SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
 		static ILexer* LexerFactory();
 	};
+    void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold);
   }} // namespace Lexers::Rnw
   
   // PluginInfo Class as a Singeton
