@@ -6,7 +6,7 @@ some intro information
 
 <<code>>=
 { # this is a comment
-
+  # why are you not folding?
   newfunction <- function(){
 
   if(T){
@@ -22,7 +22,7 @@ some intro information
 }
 
 end function
-@
+@ a comment
 summary information
 
 \end{document}

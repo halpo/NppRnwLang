@@ -27,7 +27,7 @@ using namespace RnwLang;
 using namespace RnwLang::Lexers;
 
 namespace RnwLang { namespace Lexers{ namespace Rnw{
-namespace {
+namespace { // character class helpers
 typedef unsigned int uint;
 bool inline isWhite(const char ch){
   return _tisspace(ch);
@@ -38,7 +38,8 @@ inline bool IsAWordChar(const int ch) {
 inline bool IsAWordStart(const int ch) {
 	return (ch < 0x80) && (isalnum(ch) || ch == '_');
 }
-
+}
+namespace { // state checkers
 bool inline isInTexState(const char state){
   return TEX_DEFAULT <= state && state < TEX_END;
 }
@@ -48,7 +49,8 @@ bool inline isInRState(const char state){
 bool inline isInCodeBlockState(const char state){
   return RNW_DEFAULT <= state && state < RNW_END;
 }
-
+}
+namespace { //finder functions
 int ScanTo(uint pos, const uint max,  char const * const s, LexAccessor &styler){
   #ifdef DEBUG
   dbg << rnwmsg <<  thisfunc << endl;
@@ -144,7 +146,7 @@ uint findNextCodeBlock(
   if(line ==-1)
     return max;
   else
-    return styler.LineStart(line);
+    return styler.LineStart(line)-1;
 }
 inline int findEndBlockLine (
     uint line
@@ -165,7 +167,7 @@ inline int findEndBlock(
 ) {
   int eline = findEndBlockLine(styler.GetLine(i), styler.GetLine(max), styler);
   if(eline >-1){
-    return styler.LineStart(eline+1)-1; 
+    return styler.LineStart(eline+1)-2; 
     /// @return returns the last position in the line with '@' if found.
   }
   return max; /// @return max if end of block not found.
@@ -189,7 +191,7 @@ inline int findNextCodeReuse(
 ) {
   int line = findNextCodeReuseLine(styler.GetLine(i), styler.GetLine(max), styler);
   if(line >-1){
-    return styler.LineStart(line+1)-1; 
+    return styler.LineStart(line+1)-2; 
     /// @return returns the last position in the line with '@' if found.
   }
   return max; /// @return max if end of block not found.
@@ -209,10 +211,10 @@ inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
     lineend = nextreuse;
   if(lineend==maxline)
     return max;
-  return styler.LineStart(lineend)-1;
+  return styler.LineStart(lineend)-2;
 }
-
-// Style Functions //////////////////////
+}
+namespace { // Style Functions //////////////////////
 void StyleCodeInHead(
     uint j
   , uint end
@@ -221,9 +223,15 @@ void StyleCodeInHead(
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?  
 ){
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << thisfunc
+      << "("    << j << ", " << end
+      << ", "   << deparseStyle(bgstyle) << ")"
+      << endl;
+  #endif // DEBUG
   StyleContext sc(j, end, bgstyle, styler);
   for(;sc.More(); sc.Forward()){ // scan through declarations
-    if(sc.state == RNW_OPPERATOR)
+    if(sc.state == RNW_OPERATOR)
       sc.SetState(bgstyle);
     if(sc.state == bgstyle){
       if(IsAWordStart(sc.ch)){
@@ -245,7 +253,7 @@ void StyleCodeInHead(
       )) sc.SetState(bgstyle);
     }
     if (sc.ch=='='){
-      sc.SetState(RNW_OPPERATOR);
+      sc.SetState(RNW_OPERATOR);
       sc.Forward();
     }
   }
@@ -261,6 +269,11 @@ void StyleCodeHeader(
    *  
    *  Assumes a correctly formatted line with << and >>=
    */
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << thisfunc
+      << "(" << line << ")"
+      << endl;
+  #endif // DEBUG
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1)-1;
   styler.StartSegment(j);
@@ -285,14 +298,41 @@ void StyleCodeEnd(
   *  Assumes a correctly formatted line with "@\s+comments"
   *  NOTE: Default knitr does not recognize lines with comments
   */
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << thisfunc
+      << "(" << line << ")"
+      << endl;
+  #endif // DEBUG
   uint j   = styler.LineStart(line);
-  uint max = styler.LineStart(line+1)-1;
-  if(styler.SafeGetCharAt(j)=='@')
-    styler.ColourTo(j, RNW_OPPERATOR);
-  for(j++; j<max && isWhite(styler.SafeGetCharAt(j)); j++) NULL;
-  if(j<max){
-    styler.ColourTo(max, RNW_COMMENT);
+  uint max = styler.LineStart(line+1);
+  
+  StyleContext sc(j, max-j, RNW_DEFAULT, styler);
+  if(sc.ch=='@'){
+    dbg << rnwmsg << "style @:"<< sc.ch << "/" << RNW_OPERATOR<< endl;
+    sc.SetState(RNW_OPERATOR);
+    sc.Forward();
   }
+  if(isWhite(sc.ch)) {
+    dbg << rnwmsg << " whitespace found. " << sc.atLineEnd << endl;
+    for(; sc.More() && (!sc.atLineEnd); sc.Forward()){
+      dbg << rnwmsg << "StyleCodeEnd:for loop:" 
+          << sc.currentPos << "/" << max
+          << "(" << sc.ch << ")"
+          << endl;
+      if(sc.state == RNW_COMMENT) continue;
+      if(isWhite(sc.ch)){
+        dbg << rnwmsg << "in whitespace" << endl;
+        sc.SetState(RNW_DEFAULT); //causing problems
+        dbg << rnwmsg << "leaving whitespace" << endl;
+        continue;
+      }
+      dbg << rnwmsg << "setting comment" << endl;
+      sc.SetState(RNW_COMMENT);
+    }
+  }
+  dbg << rnwmsg << "Completing sc" << endl;
+  sc.Complete();
+  dbg << rnwmsg << "exiting" << thisfunc << endl;
 }
 void StyleCodeReuse(
     int line            ///  line to style
@@ -300,6 +340,11 @@ void StyleCodeReuse(
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?  
 ){
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << thisfunc
+      << "(" << line << ")"
+      << endl;
+  #endif // DEBUG
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1)-1;
   styler.StartSegment(j);
@@ -313,6 +358,11 @@ void StyleCodeReuse(
 }
 
 void CorrectRStyle(uint start, uint end, int offset, LexAccessor styler){
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << thisfunc
+      << "(" << start << "," << end << ", " << (offset) << ")"
+      << endl;
+  #endif // DEBUG
   for(uint i=start; i<end; i++) {
     int style = styler.StyleAt(i);
     StyleContext sc(start, end-start, style, styler);
@@ -378,7 +428,7 @@ void SCI_METHOD LexerRnw::Lex(unsigned int startPos, int length, int initStyle, 
   dbg << rnwmsg << "in " << thisfunc << endl;
 	try {
     dbg << rnwmsg << "in try" << endl;
-		// Style(startPos, length, initStyle, pAccess, false);
+		Style(startPos, length, initStyle, pAccess, false);
 	} catch (...) {
 		// Should not throw into caller as may be compiled with different compiler or options
 		pAccess->SetErrorStatus(SC_STATUS_FAILURE);
@@ -388,7 +438,7 @@ void SCI_METHOD LexerRnw::Fold(unsigned int startPos, int length, int initStyle,
   dbg << rnwmsg << "in " << thisfunc << endl;
 	try {
     dbg << rnwmsg << "in try" << endl;
-		// Style(startPos, length, initStyle, pAccess, true);
+		Style(startPos, length, initStyle, pAccess, true);
 	} catch (...) {
     dbg << rnwerr << "unhandled execption in " << thisfunc << endl; 
 		//! Should not throw into caller as may be compiled with different compiler or options
@@ -396,183 +446,129 @@ void SCI_METHOD LexerRnw::Fold(unsigned int startPos, int length, int initStyle,
 	}
   dbg << rnwmsg << "leaving " << thisfunc << endl;
 }
-void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold){
+void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold){
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc
-      << "(" << startPos << ", " << length
-      << deparseStyle(initStyle) << ")"
+      << "(startPos=" << startPos 
+      << ", length=" << length
+      << ", initStyle=" << deparseStyle(initStyle) << ")"
       << endl;
   #endif // DEBUG
 
-  PropSetSimple R_props, TeX_props, Rnw_props;
+  bool foldAtNew = Rnw_props.GetInt("fold.at.new")==1;
+  bool foldCode  = Rnw_props.GetInt("fold.code")==1;
   
-  LexAccessor styler(pAccess);
+  LexAccessor  styler(pAccess);
   Accessor TeX_styler(pAccess, &TeX_props);
   Accessor   R_styler(pAccess,   &R_props);
-  WordList * keywordlists[8];
-  WordList * R_words[] = {keywordlists[3],keywordlists[4],keywordlists[5], NULL, NULL, NULL, NULL, NULL};
+  WordList * R_words[] = {keyWordLists[3],keyWordLists[4],keyWordLists[5], NULL, NULL, NULL, NULL, NULL};
+  WordList * TeX_words[] = {keyWordLists[0],keyWordLists[1],NULL, NULL, NULL, NULL, NULL, NULL};
+  
+  
   
   unsigned int lengthDoc = startPos+length ;
+  char style = initStyle;
   for ( unsigned int i = startPos; i < lengthDoc; ) {
     #ifdef DEBUG
-    dbg << rnwmsg << " Style: for loop: i=" << i << " /" << lengthDoc << endl;
+    dbg << rnwmsg << " Style: for loop: i=" << i << " /" << lengthDoc 
+                  << ",  style=" << deparseStyle(style) << endl;
     #endif
-    char style = styler.StyleAt(i);
     uint nextchange = length;
     if ( i >= lengthDoc ) break ;
     if ( isInTexState(style) ) {
       nextchange = findNextCodeBlock(i, lengthDoc, styler);
       #ifdef DEBUG
-      dbg << rnwmsg << "TeX state, lengthDoc=" << lengthDoc
+      dbg << rnwmsg << "TeX state: i=" << i
+                    << " , lengthDoc=" << lengthDoc
                     << ", nextchange="         << nextchange << endl;
       #endif
-      TeX::ColouriseDoc(startPos, nextchange-1, style, keywordlists, TeX_styler);
+      if(fold){
+        dbg << rnwmsg << "TeX Folding"  << endl;
+        TeX::FoldDoc(i, nextchange-i, style, TeX_words, TeX_styler);
+      } 
+      else {
+        dbg << rnwmsg << "TeX Coloring" << endl;
+        TeX::ColouriseDoc(i, nextchange-i, style, TeX_words, TeX_styler);
+      }
       i=nextchange;
       style=RNW_DEFAULT;
-    } else
-    if ( isInCodeBlockState(style) ) {
-      int line = styler.GetLine(i);
-      if(isNewCodeChunkLine(line, styler)){
-        StyleCodeHeader(line, styler);
-        line++;
-        i = styler.LineStart(line);
-        uint codeend = findEndRCode(i, lengthDoc, styler);
-        R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
-        CorrectRStyle(i, codeend, R_DEFAULT, styler);
-        style=RNW_DEFAULT;
-        i=styler.LineStart(styler.GetLine(codeend)+1);
-      } else if(isCodeReuseLine(line, styler)){
-        StyleCodeReuse(line, styler);
-        i = styler.LineStart(line+1);
-      } else if(isEndCodeLine(line, styler)){
-        StyleCodeEnd(line, styler);
-        i = styler.LineStart(line+1);
-        style = TEX_DEFAULT;
-      }
       #ifdef DEBUG
-      dbg << rnwmsg << "Code state, lengthDoc=" << lengthDoc
-                    << ", nextchange="          << nextchange << endl;
+      dbg << rnwmsg << "end TeX state, lengthDoc=" << lengthDoc
+                    << ", i=" << i << endl;
       #endif
     } else
+    if ( isInCodeBlockState(style) ) {
+      #ifdef DEBUG
+      dbg << rnwmsg << "Code state, i=" << i
+                    << ", lengthDoc=" << lengthDoc << endl;
+      #endif
+      int line = styler.GetLine(i);
+      i = styler.LineStart(line+1);
+      uint codeend = findEndRCode(i, lengthDoc, styler);
+      if(isNewCodeChunkLine(line, styler)){
+        if(fold){
+          char prev = styler.StyleAt(i-1);
+          bool newCodeBlock = isInCodeBlockState(prev) || isInRState(prev);
+          int levelPrev    = styler.LevelAt(line-1);
+          int levelCurr    = styler.LevelAt(line-1) >> 16;
+          int levelMinCurr = levelCurr;
+          int levelNext    = levelCurr;
+          if(foldCode){
+            if(newCodeBlock) levelNext++;
+            int levelUse = levelCurr;
+            if(!newCodeBlock && foldAtNew)levelUse=levelMinCurr;
+            if(foldAtNew)
+              levelUse = levelMinCurr;
+            int lev = levelUse | levelNext<<16;
+            if (levelUse < levelNext)
+              lev |= SC_FOLDLEVELHEADERFLAG;
+            if (lev != styler.LevelAt(line)) {
+              styler.SetLevel(line, lev);
+            }
+          }
+          R::FoldDoc(i, codeend-i, 0, R_words, R_styler);
+          styler.SetLevel(styler.GetLine(codeend)+1, levelPrev);
+        }
+        else {
+          StyleCodeHeader(line, styler);
+          R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
+          // CorrectRStyle(i, codeend, R_DEFAULT, styler);
+        }
+        style=RNW_DEFAULT;
+        i=styler.LineStart(styler.GetLine(codeend)+1);
+        dbg << rnwmsg << "end New Code Line" << endl; 
+      } 
+      else if(isCodeReuseLine(line, styler)){
+        if(!fold){
+          StyleCodeReuse(line, styler);
+          i = styler.LineStart(line+1);
+          dbg << rnwmsg << "end Code Reuse Line" << endl; 
+        }
+      }
+      else if(isEndCodeLine(line, styler)){
+        if(fold){
+        
+        } else{
+          // StyleCodeEnd(line, styler); // causing problems
+          i = styler.LineStart(line+1);
+          style = TEX_DEFAULT;
+          dbg << rnwmsg << "end End Code Line" << endl; 
+        }
+      }
+    } else
     if (isInRState(style)){
+      #ifdef DEBUG
+      dbg << rnwmsg << "R state, i=" << i
+                    << ", lengthDoc=" << lengthDoc << endl;
+      #endif
       uint codeend = findEndRCode(i, lengthDoc, styler);
       R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
-      CorrectRStyle(i, codeend, R_DEFAULT, styler);
+      // CorrectRStyle(i, codeend, R_DEFAULT, styler);
       style=RNW_DEFAULT;
       i=styler.LineStart(styler.GetLine(codeend)+1);
     }
   }
   styler.Flush();
-}
-
-void ColouriseDoc(
-    unsigned int startPos
-  , int length
-  , int initStyle
-  , WordList *keywordlists[]
-  , Accessor &styler)
-{
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc
-      << "(" << startPos << ", " << length
-      << deparseStyle(initStyle) << ")"
-      << endl;
-  #endif // DEBUG
-
-  unsigned int lengthDoc = startPos+length ;
-  for ( unsigned int i = startPos; i < lengthDoc; ) {
-    char style = styler.StyleAt(i);
-    uint nextchange = length;
-    if ( i >= lengthDoc ) break ;
-    if ( isInTexState(style) ) {
-      nextchange = findNextCodeBlock(i, lengthDoc, styler);
-      #ifdef DEBUG
-      dbg << rnwmsg << "TeX state, lengthDoc=" << lengthDoc
-                    << ", nextchange="         << nextchange << endl;
-      #endif
-      TeX::ColouriseDoc(startPos, nextchange-1, style, keywordlists, styler);
-      i=nextchange;
-      style=RNW_DEFAULT;
-    } else
-    if ( isInCodeBlockState(style) ) {
-      int line = styler.GetLine(i);
-      int maxline = styler.LineStart(lengthDoc);
-      if(isNewCodeChunkLine(line, styler)){
-        StyleCodeHeader(line, styler);
-        line++;
-        i = styler.LineStart(line);
-        int lineend   = findEndBlockLine(line, maxline, styler);
-        if(lineend==-1)
-          lineend = maxline;
-        int nexthead  = findNextCodeBlockLine(line, lineend, styler);
-        if(nexthead!=-1)
-          lineend = nexthead;
-        int nextreuse = findNextCodeReuseLine(line, lineend, styler);
-        if(nextreuse!=-1)
-          lineend = nextreuse;
-        uint codeend = styler.LineStart(lineend)-1;
-        WordList * R_words[] = {keywordlists[3],keywordlists[4],keywordlists[5], NULL, NULL, NULL, NULL, NULL};
-        R::ColouriseDoc(i, codeend-i, R_DEFAULT, R_words, styler);
-        
-      } else if(isCodeReuseLine(line, styler)){
-        StyleCodeReuse(line, styler);
-      } else if(isEndCodeLine(line, styler)){
-        StyleCodeEnd(line, styler);
-        i = styler.LineStart(line+1);
-        style = TEX_DEFAULT;
-      }
-      #ifdef DEBUG
-      dbg << rnwmsg << "Code state, lengthDoc=" << lengthDoc
-                    << ", nextchange="          << nextchange << endl;
-      #endif
-    }
-  }
-}
-
-void FoldDoc(
-    unsigned int startPos       /// Starting Position, assumed to be start of a line
-  , int length                  /// length to be analyzed
-  , int initStyle               /// initial style
-  , WordList *keywordlists[]    /// Word Lists
-  , Accessor &styler            /// Accessor object
-){
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc
-      << "(" << startPos
-      << ", " << length
-      << ", " << deparseStyle(initStyle)
-      << ")" << endl;
-  #endif //DEBUG
-  unsigned int lengthDoc = startPos+length ;
-  for ( unsigned int i = startPos; i < lengthDoc; ) {
-    char style = styler.StyleAt(i);
-    uint nextchange = length;
-    if ( i >= lengthDoc ) break ;
-    if ( isInTexState(style) ) {
-      nextchange = findNextCodeBlock(i, lengthDoc, styler);
-      #ifdef DEBUG
-      dbg << rnwmsg << "TeX state, lengthDoc=" << lengthDoc
-                    << ", nextchange="         << nextchange << endl;
-      #endif
-      TeX::FoldDoc(startPos, nextchange, style, keywordlists, styler);
-      i=nextchange;
-      //styler.StartStyling(
-    } else
-    if ( isInRState(style) ) {
-      #ifdef DEBUG
-      dbg << rnwmsg << "R state, lengthDoc=" << lengthDoc
-                    << ", nextchange="       << nextchange << endl;
-      #endif
-      R::FoldDoc(startPos, nextchange, style-R_DEFAULT, keywordlists, styler);
-    } else
-    if ( isInCodeBlockState(style) ) {
-      #ifdef DEBUG
-      dbg << rnwmsg << "Code state, lengthDoc=" << lengthDoc
-                    << ", nextchange="          << nextchange << endl;
-      #endif
-    }
-  }
-
 }
 
 }}} // end namespace RnwLang::Lexers::Rnw

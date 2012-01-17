@@ -20,28 +20,45 @@
     <LexerStyles>
         <!-- ext is the "user defined" one that you set within Notepad++. -->
         <LexerType name="Rnw" desc="R/Sweave" excluded="no" ext="">
-            <WordsStyle name="DEFAULT"            styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="COMMENT"            styleID="1"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="INSTRUCTION WORD"   styleID="2"  fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="instre1" />
-            <WordsStyle name="BASE WORD"          styleID="3"  fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="instre2" />
-            <WordsStyle name="KEYWORD"            styleID="4"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="type1" />
-            <WordsStyle name="NUMBER"             styleID="5"  fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="STRING"             styleID="6"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="STRING2"            styleID="7"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="OPERATOR"           styleID="8"  fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-            <WordsStyle name="INFIX"              styleID="10" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
             <!-- name is what shows up in the styler config for that style. -->
             <!-- styleID must be 20 through 29 and must be 20 plus the value of the keywordClass. -->
             <!-- keywordClass can be a number between 0 and 8 and corresponds with the group of Keywords above. -->
-            <WordsStyle name="INSTRUCTION WORDS"  styleID="20" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="0" />
-            <WordsStyle name="GLOBAL CONSTANTS"   styleID="21" fgColor="808000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="1" />
-            <WordsStyle name="GLOBAL FUNCTIONS"   styleID="22" fgColor="0080C0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="2" />
-            <WordsStyle name="SCRIPTED VARIABLES" styleID="23" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" keywordClass="3" />
-            <WordsStyle name="SCRIPTED FUNCTIONS" styleID="24" fgColor="0000A0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="4" />
-            <WordsStyle name="LIBRARIES"          styleID="25" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="5" />
-            <WordsStyle name="LIBRARY CALLS"      styleID="26" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="6" />
-            <WordsStyle name="OBJECT FUNCTIONS"   styleID="27" fgColor="804040" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="7" />
-            <WordsStyle name="RED FLAGS"          styleID="28" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="8" />
+            <WordsStyle name="TEX_DEFAULT"        styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TEX_SPECIAL"        styleID="1"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TEX_GROUP"          styleID="2"  fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="TEX_SYMBOL"         styleID="3"  fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TEX_COMMAND"        styleID="4"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TEX_TEXT"           styleID="5"  fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TEX_RNW_SPECIAL"    styleID="6"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            
+            <WordsStyle name="RNW_DEFAULT"        styleID="10" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="RNW_REUSE"          styleID="11" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="RNW_KEYWORD"        styleID="12" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="RNW_OPERATOR"       styleID="13" fgColor="808000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="RNW_COMMENT"        styleID="14" fgColor="0080C0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+                                                                                                                                       
+            <WordsStyle name="WORD0"              styleID="20" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" />
+            <WordsStyle name="WORD1"              styleID="21" fgColor="0000A0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD2"              styleID="22" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD3"              styleID="23" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD4"              styleID="24" fgColor="804040" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="WORD5"              styleID="25" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD6"              styleID="26" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD7"              styleID="27" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="WORD8"              styleID="28" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+                                                                                                                                       
+            <WordsStyle name="R_DEFAULT"          styleID="30" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_COMMENT"          styleID="31" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_KWORD"            styleID="32" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="R_BASEKWORD"        styleID="33" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_OTHERKWORD"       styleID="34" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_NUMBER"           styleID="35" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_STRING"           styleID="36" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_STRING2"          styleID="37" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_OPERATOR"         styleID="38" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="R_IDENTIFIER"       styleID="39" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_INFIX"            styleID="40" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_INFIXEOL"         styleID="41" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
         </LexerType>
 	</LexerStyles>
 </NotepadPlus>

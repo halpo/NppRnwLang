@@ -37,6 +37,11 @@
 using namespace Scintilla;
 #endif
 #include "lexers.h"
+#include "dbgstream.h"
+#ifdef DEBUG
+  using std::endl;
+#endif
+
 namespace RnwLang{ namespace Lexers{ namespace TeX {
 namespace { // local static functions/variables
 
@@ -284,7 +289,11 @@ void ColouriseDoc(
     int,
     WordList *keywordlists[],
     Accessor &styler) {
-
+  dbg << "RnwLang:Tex:" << "Colourise"
+      << "( startPos="      <<  startPos
+      << ", length="        << length
+      << ")" << endl;
+    
 	styler.StartAt(startPos) ;
 	styler.StartSegment(startPos) ;
 
@@ -312,9 +321,13 @@ void ColouriseDoc(
 	bool going = sc.More() ; // needed because of a fuzzy end of file state
 
 	for (; going; sc.Forward()) {
-
+    // dbg << "RnwLang:Tex:" << "Tex::Colourize:for loop:"
+        // << " position=" << sc.currentPos
+        // << " character=" << sc.ch
+        // << " state="  << sc.state
+        // << endl;
 		if (! sc.More()) { going = false ; } // we need to go one behind the end of text
-
+    
 		if (inComment) {
 			if (sc.atLineEnd) {
 				sc.SetState(SCE_TEX_TEXT) ;
@@ -389,6 +402,7 @@ void ColouriseDoc(
 			}
 		}
 	}
+  dbg << "RnwLang:Tex:" << "completing" << endl;
 	sc.ChangeState(SCE_TEX_TEXT) ;
 	sc.Complete();
 

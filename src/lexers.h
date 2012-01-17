@@ -36,7 +36,7 @@ namespace RnwLang{ namespace Lexers{
     , RNW_DEFAULT     = 10
     , RNW_REUSE
     , RNW_KEYWORD
-    , RNW_OPPERATOR
+    , RNW_OPERATOR
     , RNW_COMMENT
     , RNW_END         = 19
     /// Word lists 20-29
@@ -52,18 +52,31 @@ namespace RnwLang{ namespace Lexers{
     , WORDS_END       = 29
     /// R 30+
     , R_DEFAULT       = 30
-    , R_COMMENT
-    , R_KWORD
-    , R_BASEKWORD
-    , R_OTHERKWORD
-    , R_NUMBER
-    , R_STRING
-    , R_STRING2
-    , R_OPERATOR
-    , R_IDENTIFIER
-    , R_INFIX
-    , R_INFIXEOL
-    , R_END
+    , R_COMMENT       = 31
+    , R_KWORD         = 32
+    , R_BASEKWORD     = 33
+    , R_OTHERKWORD    = 34
+    , R_NUMBER        = 35
+    , R_STRING        = 36
+    , R_STRING2       = 37
+    , R_OPERATOR      = 38
+    , R_IDENTIFIER    = 39
+    , R_INFIX         = 40
+    , R_INFIXEOL      = 41
+    , R_END           = 42
   };
+//redefine value for R Lexer
+#define SCE_R_DEFAULT     = R_DEFAULT   
+#define SCE_R_COMMENT     = R_COMMENT   
+#define SCE_R_KWORD       = R_KWORD     
+#define SCE_R_BASEKWORD   = R_BASEKWORD 
+#define SCE_R_OTHERKWORD  = R_OTHERKWORD
+#define SCE_R_NUMBER      = R_NUMBER    
+#define SCE_R_STRING      = R_STRING    
+#define SCE_R_STRING2     = R_STRING2   
+#define SCE_R_OPERATOR    = R_OPERATOR  
+#define SCE_R_IDENTIFIER  = R_IDENTIFIER
+#define SCE_R_INFIX       = R_INFIX     
+#define SCE_R_INFIXEOL    = R_INFIXEOL  
 }} // end RnwLang::Lexers
  
