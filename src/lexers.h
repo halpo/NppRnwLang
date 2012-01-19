@@ -65,18 +65,31 @@ namespace RnwLang{ namespace Lexers{
     , R_INFIXEOL      = 41
     , R_END           = 42
   };
+//undefine value for R Lexer
+#undef SCE_R_DEFAULT     
+#undef SCE_R_COMMENT     
+#undef SCE_R_KWORD       
+#undef SCE_R_BASEKWORD   
+#undef SCE_R_OTHERKWORD  
+#undef SCE_R_NUMBER      
+#undef SCE_R_STRING      
+#undef SCE_R_STRING2     
+#undef SCE_R_OPERATOR    
+#undef SCE_R_IDENTIFIER  
+#undef SCE_R_INFIX       
+#undef SCE_R_INFIXEOL    
 //redefine value for R Lexer
-#define SCE_R_DEFAULT     = R_DEFAULT   
-#define SCE_R_COMMENT     = R_COMMENT   
-#define SCE_R_KWORD       = R_KWORD     
-#define SCE_R_BASEKWORD   = R_BASEKWORD 
-#define SCE_R_OTHERKWORD  = R_OTHERKWORD
-#define SCE_R_NUMBER      = R_NUMBER    
-#define SCE_R_STRING      = R_STRING    
-#define SCE_R_STRING2     = R_STRING2   
-#define SCE_R_OPERATOR    = R_OPERATOR  
-#define SCE_R_IDENTIFIER  = R_IDENTIFIER
-#define SCE_R_INFIX       = R_INFIX     
-#define SCE_R_INFIXEOL    = R_INFIXEOL  
+#define SCE_R_DEFAULT     R_DEFAULT   
+#define SCE_R_COMMENT     R_COMMENT   
+#define SCE_R_KWORD       R_KWORD     
+#define SCE_R_BASEKWORD   R_BASEKWORD 
+#define SCE_R_OTHERKWORD  R_OTHERKWORD
+#define SCE_R_NUMBER      R_NUMBER    
+#define SCE_R_STRING      R_STRING    
+#define SCE_R_STRING2     R_STRING2   
+#define SCE_R_OPERATOR    R_OPERATOR  
+#define SCE_R_IDENTIFIER  R_IDENTIFIER
+#define SCE_R_INFIX       R_INFIX     
+#define SCE_R_INFIXEOL    R_INFIXEOL  
 }} // end RnwLang::Lexers
  
