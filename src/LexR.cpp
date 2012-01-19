@@ -33,6 +33,8 @@ using namespace Scintilla;
   #include "dbgstream.h"
   #ifdef DEBUG
     using std::endl;
+    using std::hex;
+    using std::dec;
   #endif
 namespace RnwLang{ namespace Lexers{ namespace R {
 namespace {  // static functions
@@ -58,6 +60,10 @@ inline bool IsAnOperator(const int ch) {
 	return false;
 }
 
+inline bool isEOL(const char ch, const char chNext) {
+  return (ch == '\r' && chNext != '\n') || (ch == '\n');
+}
+
 const char * const RWordLists[] = {
             "Language Keywords",
             "Base / Default package function",
@@ -73,7 +79,7 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
                    Accessor &styler) {
 
   #ifdef DEBUG
-  dbg << "RnwLang:R Lexer:" << "R::ColourizeDoc" << endl;
+  dbg << "RnwLang:R  :" << "R::ColourizeDoc" << endl;
   #endif
 	WordList &keywords  = *keywordlists[0];
 	WordList &keywords2 = *keywordlists[1];
@@ -172,7 +178,9 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 void FoldDoc(unsigned int startPos, int length, int, WordList *[],
               Accessor &styler) {
   #ifdef DEBUG
-  dbg << "RnwLang:R Lexer: " << "R::FoldDoc" << endl;
+  dbg << "RnwLang:R  : " << "R::FoldDoc" 
+      << "last level = " << hex << styler.LevelAt(styler.GetLine(startPos-1)) << dec
+      << endl;
   #endif
 	bool foldCompact = styler.GetPropertyInt("fold.compact", 1) != 0;
 	bool foldAtElse = styler.GetPropertyInt("fold.at.else", 0) != 0;
@@ -181,22 +189,25 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 	int lineCurrent = styler.GetLine(startPos);
 	int levelCurrent = SC_FOLDLEVELBASE;
 	if (lineCurrent > 0)
-		levelCurrent = styler.LevelAt(lineCurrent-1) >> 16;
+		levelCurrent = styler.LevelAt(lineCurrent-1) & SC_FOLDLEVELNUMBERMASK;
 	int levelMinCurrent = levelCurrent;
 	int levelNext = levelCurrent;
 	char chNext = styler[startPos];
 	int styleNext = styler.StyleAt(startPos);
   #ifdef DEBUG
-  dbg << "RnwLang:" << "R Lexer: Settings:"
+  dbg << "RnwLang:R  :" << "R Lexer: Settings:"
       <<   "foldCompact="    << foldCompact
       << ", foldAtElse="     << foldAtElse
       << ", endPos="         << endPos
       << ", visibleChars="   << visibleChars
+      << endl;
+  dbg << "RnwLang:R  :" << "Fold Variables"
       << ", lineCurrent="    << lineCurrent
       << ", levelCurrent="   << levelCurrent
       << ", levelMinCurrent="<< levelMinCurrent
       << ", levelNext="      << levelNext
       << ", chNext="         << chNext
+      << ", styleNext="      << styleNext
       << ", styleNext="      << styleNext
       << endl;
   #endif
@@ -205,7 +216,6 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 		chNext  = styler.SafeGetCharAt(i + 1);
 		int style = styleNext;
 		styleNext = styler.StyleAt(i + 1);
-		bool atEOL = (ch == '\r' && chNext != '\n') || (ch == '\n');
 		if (style == SCE_R_OPERATOR) {
 			if (ch == '{') {
 				// Measure the minimum before a '{' to allow
@@ -218,12 +228,12 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 				levelNext--;
 			}
 		}
-		if (atEOL) {
+		if (isEOL(ch, chNext)) {
 			int levelUse = levelCurrent;
 			if (foldAtElse) {
 				levelUse = levelMinCurrent;
 			}
-			int lev = levelUse | levelNext << 16;
+			int lev = levelUse | (levelNext);
 			if (visibleChars == 0 && foldCompact)
 				lev |= SC_FOLDLEVELWHITEFLAG;
 			if (levelUse < levelNext)
@@ -232,8 +242,7 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 				styler.SetLevel(lineCurrent, lev);
 			}
 			lineCurrent++;
-			levelCurrent = levelNext;
-			levelMinCurrent = levelCurrent;
+			levelMinCurrent = levelCurrent = levelNext;
 			visibleChars = 0;
 		}
 		if (!isspacechar(ch))
