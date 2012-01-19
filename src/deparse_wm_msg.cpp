@@ -290,6 +290,12 @@ string RnwLang::deparseStyle(int i){
   static MsgMap stylemap = StyleMap();
   return stylemap[i];
 }
+string RnwLang::ctos(char c){
+  stringstream s;
+  char a[2]={c,0};
+  s << reinterpret_cast<char*>(a);
+  return s.str();
+}
 #else
 string deparseMsg(int i){return string();}
 #endif // NO_DEPARSE_MSG
