@@ -20,7 +20,7 @@
  *  Holds lexer functions for the Rnw R/Sweave Language
  */
 #include "RnwLang.h"
-
+#include <stdexcept>
 
 using namespace std;
 using namespace RnwLang;
@@ -50,17 +50,28 @@ bool inline isInCodeBlockState(const char state){
   return RNW_DEFAULT <= state && state < RNW_END;
 }
 
+string cl1(int style){
+  if(isInTexState(style)) return "T";
+  if(isInCodeBlockState(style)) return "C";
+  if(isInRState(style)) return "R";
+  return "W";  
+}
 string classifyLine(int line, LexAccessor& styler){
-  if(isInTexState(styler.StyleAt(styler.LineStart(line)))) return "TeX";
-  if(isInCodeBlockState(styler.StyleAt(styler.LineStart(line)))) return "Code";
-  if(isInRState(styler.StyleAt(styler.LineStart(line)))) return "R";
-  return "wft!?";
+  stringstream s;
+  for(int pos = styler.LineStart(line); pos < styler.LineStart(line+1); ++pos){
+    s << cl1(styler.StyleAt(pos));
+  }
+  return s.str();
 }
 }
-namespace { //finder functions
+namespace { // Finder functions
 int ScanTo(uint pos, const uint max,  char const * const s, LexAccessor &styler){
   #ifdef DEBUG
-  dbg << rnwmsg <<  thisfunc << endl;
+  dbg << rnwmsg <<  thisfunc 
+      << "("  << pos 
+      << ", " << max
+      << ", " << s
+      << ")" << endl;
   #endif
   uint i=pos;
   for(; i < max; i++){
@@ -150,10 +161,10 @@ uint findNextCodeBlock(
   #endif
   /// shortcuts search by looking though lines
   int line = findNextCodeBlockLine(styler.GetLine(i), styler.GetLine(max), styler);
-  if(line ==-1)
+  if(line == -1)
     return max;
   else
-    return styler.LineStart(line)-1;
+    return styler.LineStart(line);
 }
 inline int findEndBlockLine (
     uint line
@@ -174,8 +185,8 @@ inline int findEndBlock(
 ) {
   int eline = findEndBlockLine(styler.GetLine(i), styler.GetLine(max), styler);
   if(eline >-1){
-    return styler.LineStart(eline+1)-2; 
-    /// @return returns the last position in the line with '@' if found.
+    return styler.LineStart(eline+1); 
+    /// @return returns the first character in the new block.
   }
   return max; /// @return max if end of block not found.
 }
@@ -226,13 +237,13 @@ inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
     lineend = nextreuse;
   if(lineend==maxline)
     return max;
-  return styler.LineStart(lineend)-2;
+  return styler.LineStart(lineend);
 }
 }
 namespace { // Style Functions //////////////////////
 void StyleCodeInHead(
     uint j              /// first char in range
-  , uint end            /// last char in range, inclusive
+  , uint end            /// end of range, exclusive
   , char bgstyle        /// default style
   , LexAccessor &styler /// document accessor
   , WordList *keys=NULL ///  word list
@@ -244,7 +255,7 @@ void StyleCodeInHead(
       << ", "   << deparseStyle(bgstyle) << ")"
       << endl;
   #endif // DEBUG
-  StyleContext sc(j, end-j+1, bgstyle, styler);
+  StyleContext sc(j, end-j, bgstyle, styler);
   for(;sc.More(); sc.Forward()){ // scan through declarations
     dbg << rnwmsg << "StlyeCodeInHead:for loop:" 
         << " position=" << sc.currentPos
@@ -287,7 +298,8 @@ void StyleCodeHeader(
     int line            ///  line to style
   , LexAccessor &styler    ///  Style Accessor
   , WordList *keys=NULL ///  word list
-  , bool usekeys=false  ///  Should any word= be a keyword?  
+  , bool usekeys=false  ///  Should any word= be a keyword?
+  , int toEnd=-1
 ){
   /*! Style the header of a code block
    *  
@@ -299,17 +311,23 @@ void StyleCodeHeader(
       << endl;
   #endif // DEBUG
   uint j   = styler.LineStart(line);
-  uint max = styler.LineStart(line+1)-1;
-  // styler.ColourTo(j+2, RNW_DEFAULT);
-  int endhead = j+ScanTo(j, max, ">>=", styler);
+  styler.ColourTo(j+2, RNW_DEFAULT);
+  return;
+  uint max = styler.LineStart(line+1);
+  dbg << rnwmsg << __func__
+      << "  j=" << j
+      << ", max=" << max
+      << endl;
+  if(toEnd<0)
+    toEnd = ScanTo(j, max, ">>=", styler);
+  uint endhead = j+toEnd;
   styler.StartSegment(j);
   styler.ColourTo(endhead+3, RNW_DEFAULT);
-
-  StyleCodeInHead(j+2, endhead-1, RNW_DEFAULT, styler, keys, usekeys);
+  return;
+  StyleCodeInHead(j+2, endhead, RNW_DEFAULT, styler, keys, usekeys);
   dbg << rnwmsg << "styling from " << endhead << " to " << endhead +3 << endl;
-  //styler.StartSegment(endhead);
-  if(max > static_cast<uint>(endhead+3)){
-    styler.StartSegment(endhead+4);
+  if(max > static_cast<uint>(endhead + 3)){
+    styler.StartSegment(endhead + 3);
     styler.ColourTo(max, RNW_COMMENT);
   }
 }
@@ -330,28 +348,30 @@ void StyleCodeEnd(
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1);
   
+  dbg << rnwmsg << __func__
+      << "  j=" << j
+      << ", max=" << max
+      << endl;
   StyleContext sc(j, max-j, RNW_DEFAULT, styler);
-  if(sc.ch=='@'){
-    dbg << rnwmsg << "style @:"<< sc.ch << "/" << RNW_OPERATOR<< endl;
-    sc.SetState(RNW_OPERATOR);
-    sc.Forward();
-  }
-  if(isWhite(sc.ch)) {
-    dbg << rnwmsg << " whitespace found. " << sc.atLineEnd << endl;
-    for(; sc.More() && (!sc.atLineEnd); sc.Forward()){
-      dbg << rnwmsg << "StyleCodeEnd:for loop:" 
-          << sc.currentPos << "/" << max
-          << "(" << sc.ch << ")"
-          << endl;
-      if(sc.state == RNW_COMMENT) continue;
+  for(; sc.More() && (!sc.atLineEnd); sc.Forward()){
+    dbg << rnwmsg << "StyleCodeEnd:for loop:" 
+        << sc.currentPos << "/" << max
+        << "(" << ctos(sc.ch) << ")"
+        << endl;
+    if(sc.state == RNW_COMMENT) continue;
+    if(sc.state==RNW_DEFAULT) {
+      if(sc.ch=='@'  && sc.atLineStart){
+        dbg << rnwmsg << "style @:"<< sc.ch << "/" << RNW_OPERATOR<< endl;
+        sc.SetState(RNW_OPERATOR);
+      } else throw logic_error("Malformed end code line");
       if(isWhite(sc.ch)){
-        dbg << rnwmsg << "in whitespace" << endl;
-        sc.SetState(RNW_DEFAULT); //causing problems
-        dbg << rnwmsg << "leaving whitespace" << endl;
+        dbg << rnwmsg << " whitespace found. " << sc.atLineEnd << endl;
         continue;
       }
-      dbg << rnwmsg << "setting comment" << endl;
-      sc.SetState(RNW_COMMENT);
+      if(!isWhite(sc.ch) && isWhite(sc.chPrev)){
+        dbg << rnwmsg << "setting comment" << endl;
+        sc.SetState(RNW_COMMENT);
+      }
     }
   }
   dbg << rnwmsg << "Completing sc" << endl;
@@ -591,7 +611,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
     } else
     if (isInCodeBlockState(style)) {
       int line = styler.GetLine(i);
-      i = styler.LineStart(line+1);
+      uint end = styler.LineStart(line+1);
       #ifdef DEBUG
       dbg << rnwmsg << "Code state, i=" << i
                     << ", lengthDoc=" << lengthDoc 
@@ -606,25 +626,31 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         } else{
           StyleCodeEnd(line, styler);
         }
-        i = styler.LineStart(line+1);
+        i = end;
         style = TEX_DEFAULT;
         dbg << rnwmsg << "end End Code Line. moving to i=" << i << endl; 
       }
       else {
-        uint codeend = findEndRCode(i, lengthDoc, styler);
+        dbg << rnwmsg << "not an  end of code" << endl;
+        uint codebegin = end;
+        uint codeend   = findEndRCode(codebegin, lengthDoc, styler);
         if(isNewCodeChunkLine(line, styler)){
-          dbg << rnwmsg << "New code line." << endl;
-          i = styler.LineStart(line+1);
-          if(fold){
-            FoldCarryover(line, styler);
-            R::FoldDoc(i, codeend-i+1, 0, R_words, R_styler);
-          }
-          else {
-            StyleCodeHeader(line, styler);
-            R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
+          dbg << rnwmsg << "New code line." 
+              << "  codebegin=" << codebegin
+              << ", codeend=" << codeend
+              << endl;
+          if(codeend > codebegin){
+            if(fold){
+              FoldCarryover(line, styler);
+              R::FoldDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
+            }
+            else {
+              StyleCodeHeader(line, styler);
+              R::ColouriseDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
+            }
           }
           style=RNW_DEFAULT;
-          i=styler.LineStart(styler.GetLine(codeend)+1);
+          i=styler.LineStart(styler.GetLine(codeend));
           dbg << rnwmsg << "end New Code Line" << endl; 
         } 
         else if(isCodeReuseLine(line, styler)){
@@ -634,7 +660,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
           } else {
             StyleCodeReuse(line, styler);
           }
-          i = styler.LineStart(line+1);
+          i = end;
           style=R_DEFAULT;
           dbg << rnwmsg << "end Code Reuse Line" << endl; 
         }
@@ -652,7 +678,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
       }
       style=RNW_DEFAULT;
-      i=styler.LineStart(styler.GetLine(codeend)+1);
+      i=styler.LineStart(styler.GetLine(codeend));
     }
   }
   styler.Flush();
@@ -667,8 +693,9 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
             << endl;
       } 
       else {
+        
         dbg << rnwmsg << "Class:"
-            << "line=" << line
+            << "line=" << setw(3) << line
             << " class=" << classifyLine(line, styler)
             << endl;
       }

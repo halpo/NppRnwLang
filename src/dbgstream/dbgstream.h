@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <string>
+#include <iomanip>
 
 /// The following text and the ideas from it are from Dietmar Kuehl.
 // <!! Copyright (C) 1997 Dietmar Kuehl >

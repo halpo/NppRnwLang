@@ -79,7 +79,12 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
                    Accessor &styler) {
 
   #ifdef DEBUG
-  dbg << "RnwLang:R  :" << "R::ColourizeDoc" << endl;
+  dbg << "RnwLang:R  :" << "R::ColourizeDoc" 
+      << "("  << startPos
+      << ", " << length
+      << ", " << (initStyle)
+      << ") lengthDoc=" << startPos+length
+      << endl;
   #endif
 	WordList &keywords  = *keywordlists[0];
 	WordList &keywords2 = *keywordlists[1];
