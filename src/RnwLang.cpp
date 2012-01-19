@@ -172,5 +172,4 @@ __declspec( dllexport ) LexerFactoryFunction GetLexerFactory(unsigned int index)
 	else
 		return 0;
 }
-
 } // End extern "C"
