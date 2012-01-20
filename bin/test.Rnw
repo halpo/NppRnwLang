@@ -5,6 +5,10 @@
 some intro information
 <<assign>>= comment to begin the code block
 x<-1
+f <- function(){
+
+
+}
 @
    
 \end{document}

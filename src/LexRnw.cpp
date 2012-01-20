@@ -603,7 +603,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         } 
         else {
           dbg << rnwmsg << "TeX Coloring" << endl;
-          //TeX::ColouriseDoc(i, nextchange-i, style, TeX_words, TeX_styler);
+          TeX::ColouriseDoc(i, nextchange-i, style, TeX_words, TeX_styler);
         }
         i=nextchange;
       }
@@ -652,7 +652,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
             }
             else {
               StyleCodeHeader(line, styler);
-              // R::ColouriseDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
+              R::ColouriseDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
             }
           }
           style=RNW_DEFAULT;
@@ -686,7 +686,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
       if(fold){
         // R::FoldDoc(i, codeend-i+1, 0, R_words, R_styler);
       } else {
-        // R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
+        R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
       }
       style=RNW_DEFAULT;
       i=styler.LineStart(styler.GetLine(codeend));
