@@ -322,9 +322,14 @@ void StyleCodeHeader(
   uint max = styler.LineStart(line+1);
   styler.StartAt(j);
   styler.StartSegment(j);
-  dbg << rnwmsg << "StartSegment=" << styler.GetStartSegment() << endl;
+  dbg << rnwmsg 
+      << "StartSegment=" << styler.GetStartSegment() 
+      << ", max=" << max
+      << ", length=" << styler.Length()
+      << endl;
   styler.ColourTo(max-1, RNW_DEFAULT);
- styler.Flush();
+  dbg << rnwmsg << "Flushing" << endl;
+  styler.Flush();
   dbg << rnwmsg << __func__
       << "  j=" << j << "?=" << styler.GetStartSegment()
       << ", max=" << max
@@ -645,18 +650,20 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
               << "  codebegin=" << codebegin
               << ", codeend=" << codeend
               << endl;
-          if(codeend > codebegin){
-            if(fold){
-              FoldCarryover(line, styler);
+          if(fold){
+            FoldCarryover(line, styler);
+            if(codeend > codebegin){
               // R::FoldDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
             }
-            else {
-              StyleCodeHeader(line, styler);
+          }
+          else { // style
+            StyleCodeHeader(line, styler);
+            if(codeend > codebegin){
               R::ColouriseDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
             }
           }
           style=RNW_DEFAULT;
-          i=styler.LineStart(styler.GetLine(codeend));
+          i=codeend;
           dbg << rnwmsg << "end New Code Line" << endl; 
         } 
         else if(isCodeReuseLine(line, styler)){
@@ -689,7 +696,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
       }
       style=RNW_DEFAULT;
-      i=styler.LineStart(styler.GetLine(codeend));
+      i=codeend;
     }
   }
   styler.Flush();
