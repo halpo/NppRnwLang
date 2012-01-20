@@ -3,7 +3,8 @@
 
 \begin{document}
 some intro information
-<<assign>>=
+<<assign>>= comment to begin the code block
 x<-1
 @
    
+\end{document}

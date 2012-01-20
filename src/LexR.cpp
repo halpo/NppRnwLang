@@ -30,6 +30,7 @@ using namespace Scintilla;
 #endif
 
   #include "lexers.h"
+  using namespace RnwLang::Lexers;
   #include "dbgstream.h"
   #ifdef DEBUG
     using std::endl;

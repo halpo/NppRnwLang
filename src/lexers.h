@@ -25,30 +25,31 @@ namespace RnwLang{ namespace Lexers{
     /// DEFAULT is tex
     /// TEX  range from 0-9
       TEX_DEFAULT     = 0
-    , TEX_SPECIAL
-    , TEX_GROUP
-    , TEX_SYMBOL
-    , TEX_COMMAND
-    , TEX_TEXT
-    , TEX_RNW_SPECIAL
-    , TEX_END         =9
+    , TEX_SPECIAL     = 1
+    , TEX_GROUP       = 2
+    , TEX_SYMBOL      = 3
+    , TEX_COMMAND     = 4
+    , TEX_TEXT        = 5
+    , TEX_RNW_SPECIAL = 6
+    , TEX_END         = 9
     /// Rnw / Sweave only 10-11
     , RNW_DEFAULT     = 10
-    , RNW_REUSE
-    , RNW_KEYWORD
-    , RNW_OPERATOR
-    , RNW_COMMENT
+    , RNW_REUSE       = 11
+    , RNW_KEYWORD     = 12
+    , RNW_OPERATOR    = 13
+    , RNW_COMMENT     = 14
+    , RNW_NAME        = 15
     , RNW_END         = 19
     /// Word lists 20-29
     , WORD0           = 20
-    , WORD1
-    , WORD2
-    , WORD3
-    , WORD4
-    , WORD5
-    , WORD6
-    , WORD7
-    , WORD8
+    , WORD1           = 21
+    , WORD2           = 22
+    , WORD3           = 23
+    , WORD4           = 24
+    , WORD5           = 25
+    , WORD6           = 26
+    , WORD7           = 27
+    , WORD8           = 28
     , WORDS_END       = 29
     /// R 30+
     , R_DEFAULT       = 30
@@ -65,6 +66,8 @@ namespace RnwLang{ namespace Lexers{
     , R_INFIXEOL      = 41
     , R_END           = 42
   };
+}} // end RnwLang::Lexers
+#if 1 // redefine SCE_R values
 //undefine value for R Lexer
 #undef SCE_R_DEFAULT     
 #undef SCE_R_COMMENT     
@@ -91,5 +94,20 @@ namespace RnwLang{ namespace Lexers{
 #define SCE_R_IDENTIFIER  R_IDENTIFIER
 #define SCE_R_INFIX       R_INFIX     
 #define SCE_R_INFIXEOL    R_INFIXEOL  
-}} // end RnwLang::Lexers
+#endif // redefine SCE_R
+#if 1 // redefine SCE_TEX
+#undef  SCE_TEX_DEFAULT      
+#undef  SCE_TEX_SPECIAL      
+#undef  SCE_TEX_GROUP        
+#undef  SCE_TEX_SYMBOL       
+#undef  SCE_TEX_COMMAND      
+#undef  SCE_TEX_TEXT         
+#define SCE_TEX_DEFAULT      TEX_DEFAULT     
+#define SCE_TEX_SPECIAL      TEX_SPECIAL     
+#define SCE_TEX_GROUP        TEX_GROUP       
+#define SCE_TEX_SYMBOL       TEX_SYMBOL      
+#define SCE_TEX_COMMAND      TEX_COMMAND     
+#define SCE_TEX_TEXT         TEX_TEXT        
+#define SCE_TEX_END          TEX_END         
+#endif // redefine SCE_TEX 
  

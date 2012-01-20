@@ -55,6 +55,7 @@ LOBJS = \
 LEXERS = \
 	LexR.o \
 	LexTeX.o
+$(LEXERS):lexers.h
 PLUGIN_DEF = $(SRC)/Plugin.def
 PLUGIN_OBJECTS = \
 	RnwLang.o \

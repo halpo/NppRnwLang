@@ -33,6 +33,7 @@
             <WordsStyle name="RNW_KEYWORD"        styleID="12" fgColor="339933" bgColor="D175D1" fontName="" fontStyle="0" fontSize="" keywordClass="RnwWords"/>
             <WordsStyle name="RNW_OPERATOR"       styleID="13" fgColor="D1D175" bgColor="D175D1" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="RNW_COMMENT"        styleID="14" fgColor="75A3D1" bgColor="D175D1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="RNW_NAME"           styleID="15" fgColor="000000" bgColor="D175D1" fontName="" fontStyle="1" fontSize="" />
                                                                                                                                        
             <!-- name is what shows up in the styler config for that style. -->
             <!-- styleID must be 20 through 29 and must be 20 plus the value of the keywordClass. -->
