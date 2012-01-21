@@ -38,6 +38,9 @@ inline bool IsAWordChar(const int ch) {
 inline bool IsAWordStart(const int ch) {
 	return (ch < 0x80) && (isalnum(ch) || ch == '_');
 }
+inline bool isEOL(const int ch){
+  return (ch == '\r') || (ch == '\n');
+}
 }
 namespace { // state checkers
 bool inline isInTexState(const char state){
@@ -49,7 +52,6 @@ bool inline isInRState(const char state){
 bool inline isInCodeBlockState(const char state){
   return RNW_DEFAULT <= state && state < RNW_END;
 }
-
 string cl1(int style){
   if(isInTexState(style)) return "T";
   if(isInCodeBlockState(style)) return "C";
@@ -131,10 +133,8 @@ bool inline isEndCodeLine(
    *  knitr does not reflect this by default.
    */
   uint j = styler.LineStart(line);
-  if(styler.Match(j,"@")){
-    if(isWhite(styler.SafeGetCharAt(j+1))) return true;
-    else return false;
-  }
+  if(styler.SafeGetCharAt(j)=='@' && isWhite(styler.SafeGetCharAt(j+1,'\n')))
+    return true;
   return false;
 }
 // Find Functions //////
@@ -225,7 +225,6 @@ inline int findNextCodeReuse(
   }
   return max; /// @return max if end of block not found.
 }
-
 inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
   dbg << thisfunc
       << "("  << i
@@ -247,7 +246,7 @@ inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
   return styler.LineStart(lineend);
 }
 }
-namespace { // Style Functions //////////////////////
+namespace { // Style Functions
 void StyleCodeInHead(
     uint j              /// first char in range
   , uint end            /// end of range, exclusive
@@ -304,11 +303,11 @@ void StyleCodeInHead(
 }
 void StyleCodeHeader(
     int line            ///  line to style
-  , LexAccessor &styler    ///  Style Accessor
+  , LexAccessor &styler ///  Style Accessor
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?
   , int toEnd=-1
-){
+) {
   /*! Style the header of a code block
    *  
    *  Assumes a correctly formatted line with << and >>=
@@ -318,8 +317,10 @@ void StyleCodeHeader(
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
+  styler.SetLineState(line, RNW_DEFAULT);
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1);
+  while(styler.SafeGetCharAt(max,0)==0)max--;
   styler.StartAt(j);
   styler.StartSegment(j);
   dbg << rnwmsg 
@@ -327,7 +328,7 @@ void StyleCodeHeader(
       << ", max=" << max
       << ", length=" << styler.Length()
       << endl;
-  styler.ColourTo(max-1, RNW_DEFAULT);
+  styler.ColourTo(max, RNW_DEFAULT);
   dbg << rnwmsg << "Flushing" << endl;
   styler.Flush();
   dbg << rnwmsg << __func__
@@ -352,7 +353,7 @@ void StyleCodeHeader(
 }
 void StyleCodeEnd(
     int line            ///  line to style
-  , LexAccessor &styler    ///  Style Accessor
+  , LexAccessor &styler ///  Style Accessor
 ) {
  /*! Style end line
   *  
@@ -364,20 +365,21 @@ void StyleCodeEnd(
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
+  styler.SetLineState(line, RNW_DEFAULT);
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1);
+  while(styler.SafeGetCharAt(max,0)==0)max--;
   
   dbg << rnwmsg << __func__
       << "  j=" << j
       << ", max=" << max
       << endl;
-  StyleContext sc(j, max-j-1, RNW_DEFAULT, styler);
+  StyleContext sc(j, max-j, RNW_DEFAULT, styler);
   for(; sc.More() && (!sc.atLineEnd); sc.Forward()){
     dbg << rnwmsg << "StyleCodeEnd:for loop:" 
         << sc.currentPos << "/" << max
         << "(" << ctos(sc.ch) << ")"
         << endl;
-    if(sc.atLineEnd) sc.Complete();
     if(sc.state == RNW_COMMENT) continue;
     if(sc.state == RNW_OPERATOR){
       dbg << rnwmsg << __func__ << ":Resetting to RNW_DEFAULT" << endl;
@@ -407,7 +409,7 @@ void StyleCodeEnd(
 }
 void StyleCodeReuse(
     int line            ///  line to style
-  , LexAccessor &styler    ///  Style Accessor
+  , LexAccessor &styler ///  Style Accessor
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?  
 ){
@@ -416,6 +418,7 @@ void StyleCodeReuse(
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
+  styler.SetLineState(line, RNW_REUSE);
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1)-1;
   styler.StartSegment(j);
@@ -443,7 +446,6 @@ void CorrectRStyle(uint start, uint end, int offset, LexAccessor styler){
     }
   }
 }
-        
 
 } // end anonymous namespace. 
 namespace { // fold Functions
@@ -714,6 +716,10 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         dbg << rnwmsg << "Class:"
             << "line=" << setw(3) << line
             << " class=" << classifyLine(line, styler, false)
+            << endl;
+        dbg << rnwmsg << "?end code:"
+            << "line=" << setw(3) << line
+            << " is end=" << isEndCodeLine(line, styler)
             << endl;
       }
     }

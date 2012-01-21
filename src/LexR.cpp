@@ -260,4 +260,3 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 
 }}}  // end RnwLang::Lexers:R
 
-

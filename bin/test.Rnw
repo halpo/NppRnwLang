@@ -10,5 +10,4 @@ f <- function(){
 
 }
 @
-   
-\end{document}
+<<newblock>>=
