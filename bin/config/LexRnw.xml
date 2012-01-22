@@ -34,7 +34,7 @@
             <WordsStyle name="RNW_OPERATOR"       styleID="13" fgColor="D1D175" bgColor="D175D1" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="RNW_COMMENT"        styleID="14" fgColor="75A3D1" bgColor="D175D1" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="RNW_NAME"           styleID="15" fgColor="000000" bgColor="D175D1" fontName="" fontStyle="1" fontSize="" />
-                                                                                                                                       
+            
             <!-- name is what shows up in the styler config for that style. -->
             <!-- styleID must be 20 through 29 and must be 20 plus the value of the keywordClass. -->
             <!-- keywordClass can be a number between 0 and 8 and corresponds with the group of Keywords above. -->
@@ -47,19 +47,19 @@
             <WordsStyle name="WORD6"              styleID="26" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="7" />
             <WordsStyle name="WORD7"              styleID="27" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" keywordClass="8" />
             <WordsStyle name="WORD8"              styleID="28" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" keywordClass="9" />
-                                                                                                                                       
-            <WordsStyle name="R_DEFAULT"          styleID="30" fgColor="000000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_COMMENT"          styleID="31" fgColor="008000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_KWORD"            styleID="32" fgColor="0000FF" bgColor="C4C4C4" fontName="" fontStyle="1" fontSize="" />
-            <WordsStyle name="R_BASEKWORD"        styleID="33" fgColor="8000FF" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_OTHERKWORD"       styleID="34" fgColor="0080FF" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_NUMBER"           styleID="35" fgColor="FF8000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_STRING"           styleID="36" fgColor="808080" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_STRING2"          styleID="37" fgColor="808080" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_OPERATOR"         styleID="38" fgColor="000080" bgColor="C4C4C4" fontName="" fontStyle="1" fontSize="" />
-            <WordsStyle name="R_IDENTIFIER"       styleID="39" fgColor="804000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_INFIX"            styleID="40" fgColor="804000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="R_INFIXEOL"         styleID="41" fgColor="804000" bgColor="C4C4C4" fontName="" fontStyle="0" fontSize="" />
+            
+            <WordsStyle name="R_DEFAULT"          styleID="30" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_COMMENT"          styleID="31" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_KWORD"            styleID="32" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="R_BASEKWORD"        styleID="33" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_OTHERKWORD"       styleID="34" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_NUMBER"           styleID="35" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_STRING"           styleID="36" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_STRING2"          styleID="37" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_OPERATOR"         styleID="38" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="R_IDENTIFIER"       styleID="39" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_INFIX"            styleID="40" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="R_INFIXEOL"         styleID="41" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
         </LexerType>
 	</LexerStyles>
 </NotepadPlus>

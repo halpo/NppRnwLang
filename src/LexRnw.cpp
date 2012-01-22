@@ -317,10 +317,9 @@ void StyleCodeHeader(
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
-  styler.SetLineState(line, RNW_DEFAULT);
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1);
-  while(styler.SafeGetCharAt(max,0)==0)max--;
+  if(styler.GetLine(max)==line)max -= 1;
   styler.StartAt(j);
   styler.StartSegment(j);
   dbg << rnwmsg 
@@ -328,11 +327,11 @@ void StyleCodeHeader(
       << ", max=" << max
       << ", length=" << styler.Length()
       << endl;
-  styler.ColourTo(max, RNW_DEFAULT);
+  styler.ColourTo(max-1, RNW_DEFAULT);
   dbg << rnwmsg << "Flushing" << endl;
   styler.Flush();
   dbg << rnwmsg << __func__
-      << "  j=" << j << "?=" << styler.GetStartSegment()
+      << "  j="   << j   << "?=" << styler.GetStartSegment()
       << ", max=" << max
       << endl;
   dbg << rnwmsg << __func__ 
@@ -365,16 +364,15 @@ void StyleCodeEnd(
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
-  styler.SetLineState(line, RNW_DEFAULT);
   uint j   = styler.LineStart(line);
   uint max = styler.LineStart(line+1);
-  while(styler.SafeGetCharAt(max,0)==0)max--;
+  if(styler.GetLine(max)==line) max -= 1;
   
   dbg << rnwmsg << __func__
       << "  j=" << j
       << ", max=" << max
       << endl;
-  StyleContext sc(j, max-j, RNW_DEFAULT, styler);
+  StyleContext sc(j, max-j-1, RNW_DEFAULT, styler);
   for(; sc.More() && (!sc.atLineEnd); sc.Forward()){
     dbg << rnwmsg << "StyleCodeEnd:for loop:" 
         << sc.currentPos << "/" << max
@@ -430,7 +428,6 @@ void StyleCodeReuse(
   styler.ColourTo(endhead+2, RNW_REUSE);
   /// no comments allowed on reuse lines
 }
-
 void CorrectRStyle(uint start, uint end, int offset, LexAccessor styler){
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc
@@ -446,7 +443,6 @@ void CorrectRStyle(uint start, uint end, int offset, LexAccessor styler){
     }
   }
 }
-
 } // end anonymous namespace. 
 namespace { // fold Functions
   inline void FoldCarryover(int line, LexAccessor& styler){
@@ -473,8 +469,6 @@ namespace { // fold Functions
     
   }  
 }
-LexerRnw Rnw;
-
 LexerRnw::LexerRnw(){
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;

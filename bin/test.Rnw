@@ -11,3 +11,6 @@ f <- function(){
 }
 @
 <<newblock>>=
+thi works wahoo
+@
+good I finally finished
