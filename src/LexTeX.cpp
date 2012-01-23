@@ -39,7 +39,11 @@ using namespace Scintilla;
 #include "lexers.h"
 #include "dbgstream.h"
 #ifdef DEBUG
+  #include <iomanip>
   using std::endl;
+  using std::setw;
+  using std::hex;
+  using std::dec;
 #endif
 
 namespace RnwLang{ namespace Lexers{ namespace TeX {
@@ -410,6 +414,12 @@ void ColouriseDoc(
 
 void FoldDoc(unsigned int startPos, int length, int, WordList *[], Accessor &styler)
 {
+  #ifdef DEBUG
+  dbg << "RnwLang:TeX:" << __func__ 
+      << "("  << startPos
+      << ", " << length
+      << ", ...)" << endl;
+  #endif
 	bool foldCompact = styler.GetPropertyInt("fold.compact", 1) != 0;
 	unsigned int endPos = startPos+length;
 	int visibleChars=0;
@@ -419,6 +429,14 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[], Accessor &sty
 	char chNext=styler[startPos];
 	char buffer[100]="";
 
+  #ifdef DEBUG
+  char ctos[2]={chNext,0};
+  dbg << "RnwLang:TeX:" << __func__ 
+      << ": levelPrev="    << setw(4) << hex << levelPrev
+      << ", levelCurrent=" << setw(4) << hex << levelCurrent << dec
+      << ", chNext=" << (&ctos[0])
+      << endl;
+  #endif
 	for (unsigned int i=startPos; i < endPos; i++) {
 		char ch=chNext;
 		chNext=styler.SafeGetCharAt(i+1);

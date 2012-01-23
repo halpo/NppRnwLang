@@ -184,8 +184,11 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 void FoldDoc(unsigned int startPos, int length, int, WordList *[],
               Accessor &styler) {
   #ifdef DEBUG
-  dbg << "RnwLang:R  : " << "R::FoldDoc" 
-      << "last level = " << hex << styler.LevelAt(styler.GetLine(startPos-1)) << dec
+  dbg << "RnwLang:R  : " << "R::FoldDoc"
+      << "("  << startPos
+      << ", " << length
+      << ", ...)"
+      << ", last level = " << hex << styler.LevelAt(styler.GetLine(startPos-1)) << dec
       << endl;
   #endif
 	bool foldCompact = styler.GetPropertyInt("fold.compact", 1) != 0;

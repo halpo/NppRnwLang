@@ -3,14 +3,17 @@
 
 \begin{document}
 some intro information
+<<setup>>=
+y<-1
+@
+
 <<assign>>= comment to begin the code block
 x<-1
 f <- function(){
-
-
+  x
 }
-@
-<<newblock>>=
-thi works wahoo
-@
-good I finally finished
+<<setup>>
+@ a comment
+
+<<newcode>>= with comment
+<<assign>>
