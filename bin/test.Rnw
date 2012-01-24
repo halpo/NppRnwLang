@@ -16,4 +16,7 @@ f <- function(){
 @ a comment
 
 <<newcode>>= with comment
-<<assign>>
+something
+<<newcode>>
+something.else
+@

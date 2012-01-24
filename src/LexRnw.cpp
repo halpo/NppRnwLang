@@ -28,13 +28,6 @@ using namespace RnwLang::Lexers;
 
 namespace RnwLang { namespace Lexers{ namespace Rnw{
 int ScanTo(unsigned int pos, const unsigned int max,  char const * const s, LexAccessor &styler){
-  #ifdef DEBUG
-  dbg << rnwmsg <<  thisfunc 
-      << "("  << pos 
-      << ", " << max
-      << ", " << s
-      << ")" << endl;
-  #endif
   unsigned int i=pos;
   for(; i < max; i++){
     if(styler.Match(i, s)) return static_cast<int>(i-pos); 
@@ -89,15 +82,31 @@ bool inline isNewCodeChunkLine(
 bool inline isCodeReuseLine(
     int line               /// line number of line to check
   , LexAccessor &styler       /// passed on from Colourise and Fold
+  , bool allowwhite=false
 ) {
   uint j = styler.LineStart(line);
   uint nextlinestart = styler.LineStart(line+1);
+  while(allowwhite && isWhite(styler.SafeGetCharAt(j)))j++;
   if( styler.Match(j, "<<") ){
-    int endtags = ScanTo(j+2, nextlinestart-2, ">>", styler);
-    if (endtags>-1) {
-      if(styler.SafeGetCharAt(j+endtags+2)=='=') return false;
-      else return true;
-    } else return false;
+    dbg << rnwmsg << __func__ << ":found <<" << endl;
+    j+=2;
+    int endtags = ScanTo(j, nextlinestart-1, ">>", styler);
+    if (endtags > -1) {
+      dbg << rnwmsg << __func__ << ":found >>" << endl;
+      j += endtags+2;
+      for(char ch = styler.SafeGetCharAt(j, 0x0A);
+          (isWhite(ch) || isEOL(ch));
+          ch = styler.SafeGetCharAt(++j, 0x0A)){
+        // loop to end of line.  Allow trailing white space only.
+        dbg << rnwmsg << __func__ 
+            << ": j=" << j
+            << ": ch#=" << static_cast<int>(ch)
+            << ", isEOL=" << isEOL(ch)
+            << endl;
+        if(isEOL(ch)) return true;
+        /// allows white space but no comments on reuse lines.
+      }
+    }
   }
   return false;
 }
@@ -219,20 +228,21 @@ inline int findNextCodeReuse(
 ) {
   int line = findNextCodeReuseLine(styler.GetLine(i), styler.GetLine(max), styler);
   if(line >-1){
-    return styler.LineStart(line+1)-2; 
+    return styler.LineStart(line+1); 
     /// @return returns the last position in the line with '@' if found.
   }
   return max; /// @return max if end of block not found.
 }
 inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
-  dbg << thisfunc
+  dbg << __func__
       << "("  << i
       << ", " << max
       << ")"  << endl;
-  int line    = styler.GetLine(i),
-      maxline = styler.GetLine(max),
-      endrline    = maxline;
-  int lineend   = findEndBlockLine(line, maxline+1, styler);
+  if(!(i<max)) return max;
+  int line     = styler.GetLine(i),
+      maxline  = styler.GetLine(max),
+      endrline = maxline+1;
+  int lineend = findEndBlockLine(line, endrline, styler);
   if(lineend !=-1)
     endrline = lineend;
   int nexthead  = findNextCodeBlockLine(line, endrline, styler);
@@ -242,7 +252,7 @@ inline uint findEndRCode(uint i, uint max, LexAccessor &styler){
   if(nextreuse!=-1)
     endrline = nextreuse;
   unsigned int endr = styler.LineStart(endrline);
-  if(endrline==maxline && lineend==-1)
+  if(endrline>=maxline && lineend==-1 && nexthead==-1 && nextreuse==-1)
     endr = max;
   #ifdef DEBUG
   dbg << rnwmsg << __func__
@@ -316,7 +326,8 @@ void StyleCodeHeader(
   , LexAccessor &styler ///  Style Accessor
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?
-  , int toEnd=-1
+  , int toEnd=-1        /// is toEnd already provided?
+  , bool reuse=false    ///  style as reuse?  This disallows comments on line.
 ) {
   /*! Style the header of a code block
    *  
@@ -352,11 +363,12 @@ void StyleCodeHeader(
       << " is " << classifyLine(line,styler,false)
       << endl;
   if(toEnd<0)
-    toEnd = ScanTo(j, max, ">>=", styler);
+    toEnd = ScanTo(j, max, reuse?">>":">>=", styler);
   uint endhead = j+toEnd;
   StyleCodeInHead(j+2, endhead, RNW_DEFAULT, styler, keys, usekeys);
   dbg << rnwmsg << "styling from " << endhead << " to " << endhead +3 << endl;
-  if(max-1 > static_cast<uint>(endhead + 3)){
+  if(!reuse && max-1 > endhead + 3){
+    /// No comments for reuse==true
     styler.StartAt(endhead + 3);
     styler.StartSegment(endhead + 3);
     styler.ColourTo(max-1, RNW_COMMENT);
@@ -433,19 +445,26 @@ void StyleCodeReuse(
   , WordList *keys=NULL ///  word list
   , bool usekeys=false  ///  Should any word= be a keyword?  
 ){
+  StyleCodeHeader(line, styler, keys, usekeys,-1,true);
+  return;
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc
       << "(" << line << ")"
       << endl;
   #endif // DEBUG
-  styler.SetLineState(line, RNW_REUSE);
   uint j   = styler.LineStart(line);
-  uint max = styler.LineStart(line+1)-1;
+  uint max = styler.LineStart(line+1);
+  if(styler.GetLine(max)==line){
+    dbg << rnwmsg << __func__ << ":special case EOD." << endl;
+    max = styler.Length();
+  }
+  styler.StartAt(j);
   styler.StartSegment(j);
-  styler.ColourTo(j+2, RNW_REUSE);
-  int endhead = ScanTo(j, max, ">>", styler);
+  styler.ColourTo(max-1, RNW_DEFAULT);
+  int toEnd = ScanTo(j, max, ">>", styler);
+  uint endhead = j+toEnd;
 
-  StyleCodeInHead(j+2, endhead-1, RNW_REUSE, styler, keys, usekeys);
+  StyleCodeInHead(j+2, endhead, RNW_DEFAULT, styler, keys, usekeys);
   styler.StartSegment(endhead);
   styler.ColourTo(endhead+2, RNW_REUSE);
   /// no comments allowed on reuse lines
@@ -474,7 +493,7 @@ namespace { // fold Functions
           << ", " << hex << styler.LevelAt(line) << dec
           << ")"  << endl;
     #endif 
-    styler.SetLevel(line+1, styler.LevelAt(line));
+    if(line>0)styler.SetLevel(line+1, styler.LevelAt(line));
   }
   inline void FoldCarryoverFlags(int line, LexAccessor& styler){
     #ifdef DEBUG
@@ -725,9 +744,11 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
             FoldCarryover(line, styler);
             if(codeend > codebegin){ // correct code
               R::FoldDoc(codebegin, codeend-codebegin, R_DEFAULT, R_words, R_styler);
-              for(int cline = styler.GetLine(codebegin); cline < styler.GetLine(codeend); ++cline){
+              int linecodeend = styler.GetLine(codeend);
+              for(int cline = styler.GetLine(codebegin); cline < linecodeend; ++cline){
                 styler.SetLevel(cline, styler.LevelAt(cline)+1);
               }
+              FoldCarryover(linecodeend, styler);
             }
           }
           else { // style
@@ -743,6 +764,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
         else if(isCodeReuseLine(line, styler)){
           dbg << rnwmsg << "Reuse code line." << endl;
           if(fold) {
+            FoldCarryover(line-1, styler);
             FoldCarryover(line, styler);
           } else {
             StyleCodeReuse(line, styler);
@@ -784,14 +806,14 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
             << " level=" << setw(4) << hex << styler.LevelAt(line) << dec
             << endl;
       } 
-      else {
-        dbg << rnwmsg << "Class:"
+      else { //color
+        // dbg << rnwmsg << "Class:"
+            // << "line=" << setw(3) << line
+            // << " class=" << classifyLine(line, styler, false)
+            // << endl;
+        dbg << rnwmsg << "?reuse code:"
             << "line=" << setw(3) << line
-            << " class=" << classifyLine(line, styler, false)
-            << endl;
-        dbg << rnwmsg << "?end code:"
-            << "line=" << setw(3) << line
-            << " is end=" << isEndCodeLine(line, styler)
+            << " is reuse=" << isCodeReuseLine(line, styler)
             << endl;
       }
     }
