@@ -7,7 +7,7 @@
 
 #ifndef ACCESSOR_H
 #define ACCESSOR_H
-
+#include "LexAccessor.h"
 #ifdef SCI_NAMESPACE
 namespace Scintilla {
 #endif

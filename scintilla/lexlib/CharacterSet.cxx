@@ -21,6 +21,44 @@ using namespace Scintilla;
 #ifdef SCI_NAMESPACE
 namespace Scintilla {
 #endif
+CharacterSet::CharacterSet(setBase base/* =setNone */, const char *initialSet/* ="" */, int size_/* =0x80 */, bool valueAfter_/* =false */) {
+  size = size_;
+  valueAfter = valueAfter_;
+  bset = new bool[size];
+  for (int i=0; i < size; i++) {
+    bset[i] = false;
+  }
+  AddString(initialSet);
+  if (base & setLower)
+    AddString("abcdefghijklmnopqrstuvwxyz");
+  if (base & setUpper)
+    AddString("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  if (base & setDigits)
+    AddString("0123456789");
+}
+CharacterSet::~CharacterSet() {
+  delete []bset;
+  bset = 0;
+  size = 0;
+}
+void CharacterSet::Add(int val) {
+  assert(val >= 0);
+  assert(val < size);
+  bset[val] = true;
+}
+void CharacterSet::AddString(const char *setToAdd) {
+  for (const char *cp=setToAdd; *cp; cp++) {
+    int val = static_cast<unsigned char>(*cp);
+    assert(val >= 0);
+    assert(val < size);
+    bset[val] = true;
+  }
+}
+bool CharacterSet::Contains(int val) const {
+  assert(val >= 0);
+  if (val < 0) return false;
+  return (val < size) ? bset[val] : valueAfter;
+}
 
 int CompareCaseInsensitive(const char *a, const char *b) {
 	while (*a && *b) {

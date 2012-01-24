@@ -22,10 +22,8 @@ public:
 	int len;
 	bool onlyLineEnds;	///< Delimited by any white space or only line ends
 	int starts[256];
-	WordList(bool onlyLineEnds_ = false) :
-		words(0), list(0), len(0), onlyLineEnds(onlyLineEnds_)
-		{}
-	~WordList() { Clear(); }
+	WordList(bool onlyLineEnds_ = false);
+	~WordList();
 	operator bool() const { return len ? true : false; }
 	bool operator!=(const WordList &other) const;
 	void Clear();
@@ -38,4 +36,5 @@ public:
 }
 #endif
 
-#endif
+#endif //WORDLIST_H
+

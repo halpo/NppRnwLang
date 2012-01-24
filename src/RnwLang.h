@@ -17,16 +17,16 @@
 // You should have received a copy of the GNU General Public License
 // along with RnwLang.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RnwLang_H
-#define RnwLang_H
+#ifndef RNWLANG_SRC_RnwLang_H
+#define RNWLANG_SRC_RnwLang_H
 
-#if 1 // Includes Section
+//{ Includes Section
 
   #ifndef _WIN32_WINNT
     #define _WIN32_WINNT 0x0501
   #endif
 
-  // C RunTime Header Files
+  //{ C RunTime Header Files
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
@@ -37,8 +37,8 @@
   #include <time.h>
   #include <sys/types.h>
   #include <sys/stat.h>
-
-  // STL Headers
+  //}
+  //{ STL Headers
   #include <iostream>
   #include <sstream>
   #include <string>
@@ -49,22 +49,20 @@
   #include <algorithm>
   #include <exception>
   #include <string>
-
-  // Windows Header Files
+  //}
+  //{ Windows Header Files
   #include <WinDef.h>
-
-
+  //}
   #ifdef UNICODE
     #include <wchar.h>
   #endif
-
-  // Notepad++
+  //{ Notepad++
   #include "Common.h"
   #include "Window.h"
   #include "StaticDialog.h"
   #include "PluginInterface.h"
-
-  // Scintilla includes
+  //}
+  //{ Scintilla includes
   #include "ILexer.h"
   #include "PropSetSimple.h"
   #include "WordList.h"
@@ -74,8 +72,8 @@
   #include "LexerModule.h"
   #include "StyleContext.h"
   #include "CharacterSet.h"
-
-  // This project Includes
+  //}
+  //{ RnwLang includes
   #include <cassert>
   #include <algorithm>
   #include "unidef.h"
@@ -89,8 +87,8 @@
   #else
     #define generic_strncpy_s strncpy_s
   #endif
-
-#endif //*/ end includes/defines section
+  //}
+//} end includes/defines section
 using std::vector;
 using std::string;
 
@@ -149,5 +147,5 @@ namespace RnwLang
   extern PluginInfo Plugin;
 }
 
-#endif  // RNWLANG_H
+#endif  // RNWLANG_SRC_RNWLANG_H
 

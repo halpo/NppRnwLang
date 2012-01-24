@@ -44,6 +44,7 @@ LOBJS = \
 	Accessor.o \
 	Catalogue.o \
 	ExternalLexer.o \
+	LexAccessor.o \
 	LexerBase.o \
 	LexerModule.o \
 	LexerSimple.o \
@@ -91,7 +92,8 @@ INCLUDEDIRS = -I $(SCINTILLA_SRC)/include \
 		    
 # http://gcc.gnu.org/onlinedocs/gcc-4.4.3/gcc/Warning-Options.html#Warning-Options
 CHECK_FLAGS  = -Wall -Wextra -Wno-missing-braces -Wno-char-subscripts \
-               -Wno-strict-overflow -pedantic -Wno-unused-parameter
+               -Wno-strict-overflow -pedantic -Wno-unused-parameter \
+			-Wno-missing-field-initializers
 SCI_CXXFLAGS = -DSCI_LEXER
 CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 	$(INCLUDEDIRS) -fno-rtti  \

@@ -293,11 +293,13 @@ void ColouriseDoc(
     int,
     WordList *keywordlists[],
     Accessor &styler) {
+  #ifdef DEBUG
   dbg << "RnwLang:Tex:" << "Colourise"
       << "( startPos="      <<  startPos
       << ", length="        << length
       << ")" << endl;
-    
+  #endif
+  
 	styler.StartAt(startPos) ;
 	styler.StartSegment(startPos) ;
 
@@ -325,11 +327,6 @@ void ColouriseDoc(
 	bool going = sc.More() ; // needed because of a fuzzy end of file state
 
 	for (; going; sc.Forward()) {
-    // dbg << "RnwLang:Tex:" << "Tex::Colourize:for loop:"
-        // << " position=" << sc.currentPos
-        // << " character=" << sc.ch
-        // << " state="  << sc.state
-        // << endl;
 		if (! sc.More()) { going = false ; } // we need to go one behind the end of text
     
 		if (inComment) {
@@ -406,7 +403,9 @@ void ColouriseDoc(
 			}
 		}
 	}
+  #ifdef DEBUG
   dbg << "RnwLang:Tex:" << "completing" << endl;
+  #endif
 	sc.ChangeState(SCE_TEX_TEXT) ;
 	sc.Complete();
 

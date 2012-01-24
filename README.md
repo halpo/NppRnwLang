@@ -14,6 +14,6 @@ Building
 --------
 I build with the [TDM](http://tdm-gcc.tdragon.net/) port of GCC which plays slightly nicer with the windows SDK, which is required or some components.
 
-building should be as simple and going to the `bin/` directory and executing `make all` or `make all UNICODE=1` for a unicode version.
+building should be as simple and going to the `bin/` directory and executing `make all UNICODE=1` for a unicode version.  The `--win32` flag might also be necessary.  ANSI at this point is unsupported and untested.
 
 ~Andrew

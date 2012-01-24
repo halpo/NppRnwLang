@@ -4,7 +4,9 @@
  *  Here I break the convention of Fold<<Name>>Doc() in favor of c++ namespaces where
  *  we use <<Name>>::FoldDoc()  This way new languages can be defined by preprocessor macro.
  */
-
+#ifndef RNWLANG_SRC_LEXERS_H_
+#define RNWLANG_SRC_LEXERS_H_
+#include "Accessor.h"
 
 #ifdef ACCESSOR_H
 #ifdef SCI_NAMESPACE
@@ -110,4 +112,5 @@ namespace RnwLang{ namespace Lexers{
 #define SCE_TEX_TEXT         TEX_TEXT        
 #define SCE_TEX_END          TEX_END         
 #endif // redefine SCE_TEX 
- 
+#endif //RNWLANG_SRC_LEXERS_H_
+

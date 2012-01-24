@@ -8,3 +8,4 @@ string deparseStyle(int);
 string ctos(char);
 }
 #endif // DEPARSE_WM_MSG_H_
+

@@ -17,6 +17,12 @@
 using namespace Scintilla;
 #endif
 
+WordList::WordList(bool onlyLineEnds_ /* = false */) :
+  words(0), list(0), len(0), onlyLineEnds(onlyLineEnds_)
+  {}
+WordList::~WordList() { Clear(); }
+
+
 /**
  * Creates an array that points into each word in the string and puts \0 terminators
  * after each word.
