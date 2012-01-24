@@ -17,6 +17,20 @@
 // along with RnwLang.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RnwLang.h"
+//{ Windows Header Files
+#include <WinDef.h>
+//}
+//{ Notepad++
+#include "Common.h"
+#include "Window.h"
+#include "StaticDialog.h"
+#include "PluginInterface.h"
+//}
+
+#ifdef DEBUG
+  #include "dbgstream.h"
+  #include "deparse_wm_msg.h"
+#endif
 
 #define EXT_LEXER_DECL __declspec( dllexport ) __stdcall
 
@@ -25,10 +39,44 @@ using namespace RnwLang::Lexers::Rnw;
 
 namespace RnwLang
 {
-static const generic_string PLUGIN_NAME      = TEXT("&Rnw Lexer");
+  typedef std::basic_string<TCHAR> generic_string;
+	void aboutDlg();
+
+
+  class MenuItem : public FuncItem{
+  public:
+    MenuItem( generic_string name,         /// Item Name
+              PFUNCPLUGINCMD func=NULL,  /// function to execute
+              int cmdID = NULL,
+              bool i2c = false,
+              ShortcutKey * Key = NULL);
+
+  };
+  class PluginInfo{
+  private:
+    PluginInfo(PluginInfo const &);
+    void operator=(PluginInfo const&);
+    vector<MenuItem> MenuItems;
+  protected:
+    NppData nppData;
+    HWND _pHandle;
+  public:
+    PluginInfo();
+    void setInfo(NppData notpadPlusData);
+    FuncItem * getMenuItems();
+    int numMenuItems();
+    HWND nppHandle();
+    HWND pluginHandle();
+    void setPluginHandle(HWND);
+  };
+  // PluginInfo Class as a Singeton
+  PluginInfo Plugin;
+
+  
+static const generic_string PLUGIN_NAME      = _TEXT("&Rnw Lexer");
 static const std::string LEXER_NAME          = "RnwLang";
-static const generic_string LEXER_STATUS_TEXT= TEXT("R/Sweave Lexer");
-static const generic_string aboutMenuItem    = TEXT("&About R/Sweave");
+static const generic_string LEXER_STATUS_TEXT= _TEXT("R/Sweave Lexer");
+static const generic_string aboutMenuItem    = _TEXT("&About R/Sweave");
 void aboutDlg()
 {
   ::MessageBox(Plugin.nppHandle(),
@@ -54,8 +102,10 @@ RnwLang::MenuItem::MenuItem(
 }
 
 PluginInfo::PluginInfo(){
+  #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
-  MenuItem mi_about(TEXT("&About LexRnwer"), &aboutDlg);
+  #endif
+  MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
   MenuItems.push_back(mi_about);
 }
 FuncItem * PluginInfo::getMenuItems(){
@@ -65,7 +115,9 @@ int PluginInfo::numMenuItems(){
   return MenuItems.size();
 }
 void PluginInfo::setInfo(NppData notpadPlusData){ 
+  #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
+  #endif
   nppData = notpadPlusData; 
 }
 HWND PluginInfo::nppHandle(){
@@ -77,8 +129,6 @@ void PluginInfo::setPluginHandle(HWND pHandle){
 HWND PluginInfo::pluginHandle(){
   return _pHandle;
 }
-
-PluginInfo Plugin;
 }
 using namespace RnwLang;
 
@@ -95,17 +145,25 @@ BOOL APIENTRY DllMain(  HANDLE hModule,      /// module handle, NOT USED
 	switch (reasonForCall)
 	{
 	case DLL_PROCESS_ATTACH:
+    #ifdef DEBUG
     dbg << rnwmsg << "DllMain:DLL_PROCESS_ATTACH" << endl;
+    #endif
     Plugin.setPluginHandle( static_cast<HWND>(hModule));
 		break;
 	case DLL_THREAD_ATTACH:
+    #ifdef DEBUG
     dbg << rnwmsg << "DllMain:DLL_THREAD_ATTACH" << endl;
+    #endif
 		break;
 	case DLL_THREAD_DETACH:
+    #ifdef DEBUG
     dbg << rnwmsg << "DllMain:DLL_THREAD_DETACH" << endl;
+    #endif
 		break;
 	case DLL_PROCESS_DETACH:
+    #ifdef DEBUG
     dbg << rnwmsg << ("DllMain:DLL_PROCESS_DETACH") << endl;
+    #endif
 		break;
 	}
 	return TRUE;
@@ -118,15 +176,21 @@ __declspec(dllexport) BOOL isUnicode() {
 #endif
 
 __declspec(dllexport) const TCHAR * getName() { 
+  #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
+  #endif
   return PLUGIN_NAME.c_str(); 
 }
 void setInfo(NppData notpadPlusData){ 
+  #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
+  #endif
   Plugin.setInfo(notpadPlusData); 
 }
 __declspec(dllexport) FuncItem * getFuncsArray(int *nbF){
+  #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
+  #endif
 	*nbF = Plugin.numMenuItems();
 	return Plugin.getMenuItems();
 }
@@ -143,30 +207,41 @@ __declspec(dllexport) LRESULT messageProc(
   case WM_SIZE:
     break;
   default:
+    #ifdef DEBUG
     dbg << rnwmsg << "Message received " << deparseMsg(Message)  << endl;
+    #endif
+    break;
   }
   return TRUE; 
 }
 EXT_LEXER_DECL int  GetLexerCount() { 
+  #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
+  #endif
   return 1; 
 }
 EXT_LEXER_DECL void GetLexerName(unsigned int /*index*/, char *name, int buflength){
+  #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
+  #endif
 	*name = 0;
 	if (buflength > 0) {
 		strncpy(name, LEXER_NAME.c_str(), buflength);
 	}
 }
 EXT_LEXER_DECL void GetLexerStatusText(unsigned int /*Index*/, TCHAR *desc, int buflength){
+  #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
+  #endif
 	if (buflength > 0) {
     _tcsncpy(desc, LEXER_STATUS_TEXT.c_str(), buflength);
 	}
 }
 
 __declspec( dllexport ) LexerFactoryFunction GetLexerFactory(unsigned int index) {
+  #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << " index=" << index << endl;
+  #endif
 	if (index == 0)
 		return &LexerRnw::LexerFactory;
 	else

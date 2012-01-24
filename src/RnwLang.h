@@ -21,10 +21,11 @@
 #define RNWLANG_SRC_RnwLang_H
 
 //{ Includes Section
-
+  #include <Tchar.h>
   #ifndef _WIN32_WINNT
     #define _WIN32_WINNT 0x0501
   #endif
+  
 
   //{ C RunTime Header Files
   #include <stdio.h>
@@ -50,19 +51,13 @@
   #include <exception>
   #include <string>
   //}
-  //{ Windows Header Files
-  #include <WinDef.h>
-  //}
   #ifdef UNICODE
     #include <wchar.h>
   #endif
   //{ Notepad++
-  #include "Common.h"
-  #include "Window.h"
-  #include "StaticDialog.h"
-  #include "PluginInterface.h"
   //}
   //{ Scintilla includes
+  #include "Scintilla.h"
   #include "ILexer.h"
   #include "PropSetSimple.h"
   #include "WordList.h"
@@ -78,8 +73,6 @@
   #include <algorithm>
   #include "unidef.h"
   #include "lexers.h"
-  #include "dbgstream.h"
-  #include "deparse_wm_msg.h"
   
   #define thisfunc __PRETTY_FUNCTION__
   #ifdef UNICODE
@@ -94,39 +87,6 @@ using std::string;
 
 namespace RnwLang
 {
-  typedef std::basic_string<TCHAR> generic_string;
-  static const string rnwmsg = "RnwLang:MSG:";
-  static const string rnwerr = "RnwLang:ERROR:";
-	void aboutDlg();
-
-
-  class MenuItem : public FuncItem{
-  public:
-    MenuItem( generic_string name,         /// Item Name
-              PFUNCPLUGINCMD func=NULL,  /// function to execute
-              int cmdID = NULL,
-              bool i2c = false,
-              ShortcutKey * Key = NULL);
-
-  };
-  class PluginInfo{
-  private:
-    PluginInfo(PluginInfo const &);
-    void operator=(PluginInfo const&);
-    vector<MenuItem> MenuItems;
-  protected:
-    NppData nppData;
-    HWND _pHandle;
-  public:
-    PluginInfo();
-    void setInfo(NppData notpadPlusData);
-    FuncItem * getMenuItems();
-    int numMenuItems();
-    HWND nppHandle();
-    HWND pluginHandle();
-    void setPluginHandle(HWND);
-  };
-
   namespace Lexers{ namespace Rnw{
 	class LexerRnw : public LexerBase {
   private:
@@ -142,9 +102,10 @@ namespace RnwLang
     void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
  	};
   }} // namespace Lexers::Rnw
-  
-  // PluginInfo Class as a Singeton
-  extern PluginInfo Plugin;
+  #ifdef DEBUG
+  static const string rnwmsg = "RnwLang:MSG:";
+  static const string rnwerr = "RnwLang:ERROR:";
+  #endif
 }
 
 #endif  // RNWLANG_SRC_RNWLANG_H

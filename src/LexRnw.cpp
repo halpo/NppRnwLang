@@ -21,7 +21,11 @@
  */
 #include "RnwLang.h"
 #include <stdexcept>
-
+#include <iomanip>
+#ifdef DEBUG
+  #include "dbgstream.h"
+  #include "deparse_wm_msg.h"
+#endif
 using namespace std;
 using namespace RnwLang;
 using namespace RnwLang::Lexers;

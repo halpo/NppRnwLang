@@ -29,14 +29,16 @@
 using namespace Scintilla;
 #endif
 
-  #include "lexers.h"
-  using namespace RnwLang::Lexers;
+#include "lexers.h"
+using namespace RnwLang::Lexers;
+#ifdef DEBUG
   #include "dbgstream.h"
-  #ifdef DEBUG
-    using std::endl;
-    using std::hex;
-    using std::dec;
-  #endif
+  #include <iomanip>
+  using std::endl;
+  using std::hex;
+  using std::dec;
+#endif
+
 namespace RnwLang{ namespace Lexers{ namespace R {
 namespace {  // static functions
 inline bool IsAWordChar(const int ch) {

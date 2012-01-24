@@ -37,8 +37,8 @@
 using namespace Scintilla;
 #endif
 #include "lexers.h"
-#include "dbgstream.h"
 #ifdef DEBUG
+  #include "dbgstream.h"
   #include <iomanip>
   using std::endl;
   using std::setw;

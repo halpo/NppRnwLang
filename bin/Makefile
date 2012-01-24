@@ -61,12 +61,14 @@ PLUGIN_DEF = $(SRC)/Plugin.def
 PLUGIN_OBJECTS = \
 	RnwLang.o \
 	RnwRes.o \
-	LexRnw.o \
-	deparse_wm_msg.o \
-	dbgstream.o \
-	$(LEXERS)
+	$(LEXERS) \
+	LexRnw.o
+	# deparse_wm_msg.o \
+	# dbgstream.o
 $(PLUGIN_OBJECTS): $(SRC)/RnwLang.h
-OBJECTS = $(PLUGIN_OBJECTS) $(LOBJS)
+OBJECTS = \
+	$(LOBJS) \
+	$(PLUGIN_OBJECTS)
 
 vpath %.h   $(SRC) $(SRC)/headers\
             $(SCINTILLA_SRC)/src \
@@ -102,6 +104,9 @@ CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 # DEBUG
 ifdef DEBUG
 CXXFLAGS=-DDEBUG -g -O0 $(CXXBASEFLAGS)
+PLUGIN_OBJECTS += \
+	deparse_wm_msg.o \
+	dbgstream.o
 else
 CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS)
 STRIPFLAG=-s
