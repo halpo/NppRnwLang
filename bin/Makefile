@@ -8,8 +8,8 @@ DEL = rm -f
 all: plugin
 
 # CONTROL Variables
-# DEBUG=1
-# UNICODE=1
+# only supporting unicode
+UNICODE=1
 
 SRC = ../src
 
@@ -113,12 +113,13 @@ endif
 
 #UNICODE
 ifdef UNICODE
-CXXFLAGS+=-DUNICODE
+CXXFLAGS+=-DUNICODE -D_UNICODE
 endif
 
 # exported variables
 export DEBUG
 export UNICODE
+export _UNICODE
 
 ##  RULES  ####################################################################
 #goals
