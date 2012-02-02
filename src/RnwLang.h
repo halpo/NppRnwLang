@@ -126,6 +126,7 @@ namespace RnwLang
     int numMenuItems();
     HWND nppHandle();
     HWND pluginHandle();
+    HWND CurrScintillaHandle();
     void setPluginHandle(HWND);
   };
 
@@ -147,6 +148,12 @@ namespace RnwLang
   
   // PluginInfo Class as a Singeton
   extern PluginInfo Plugin;
+  
+  //Styler Functions
+  unsigned int SetEOLFilledLine(int line, LexAccessor& styler);
+  unsigned int SetEOLFilledAt(unsigned int pos);
+  unsigned int SetEOLFilledAll(LexAccessor& styler);
+  unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits = false);
 }
 
 #endif  // RNWLANG_H

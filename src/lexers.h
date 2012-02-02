@@ -21,7 +21,7 @@ namespace RnwLang{ namespace Lexers{
   NEWLANG(R)
   NEWLANG(TeX)
   NEWLANG(Rnw)
-    enum { /// Styles
+  enum { /// Styles
     /// DEFAULT is tex
     /// TEX  range from 0-9
       TEX_DEFAULT     = 0
@@ -40,31 +40,23 @@ namespace RnwLang{ namespace Lexers{
     , RNW_COMMENT     = 14
     , RNW_NAME        = 15
     , RNW_END         = 19
-    /// Word lists 20-29
-    , WORD0           = 20
-    , WORD1           = 21
-    , WORD2           = 22
-    , WORD3           = 23
-    , WORD4           = 24
-    , WORD5           = 25
-    , WORD6           = 26
-    , WORD7           = 27
-    , WORD8           = 28
-    , WORDS_END       = 29
     /// R 30+
-    , R_DEFAULT       = 30
-    , R_COMMENT       = 31
-    , R_KWORD         = 32
-    , R_BASEKWORD     = 33
-    , R_OTHERKWORD    = 34
-    , R_NUMBER        = 35
-    , R_STRING        = 36
-    , R_STRING2       = 37
-    , R_OPERATOR      = 38
-    , R_IDENTIFIER    = 39
-    , R_INFIX         = 40
-    , R_INFIXEOL      = 41
-    , R_END           = 42
+    , R_DEFAULT       = 20
+    , R_COMMENT       = 21
+    , R_KWORD         = 22
+    , R_BASEKWORD     = 23
+    , R_OTHERKWORD    = 24
+    , R_NUMBER        = 25
+    , R_STRING        = 26
+    , R_STRING2       = 27
+    , R_OPERATOR      = 28
+    , R_IDENTIFIER    = 29
+    , R_INFIX         = 30
+    , R_INFIXEOL      = 31
+    , R_END           = 32
+  };
+  enum {
+    RNW_FOLD_R = 0x0080
   };
 }} // end RnwLang::Lexers
 #if 1 // redefine SCE_R values

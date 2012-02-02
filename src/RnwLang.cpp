@@ -71,6 +71,9 @@ void PluginInfo::setInfo(NppData notpadPlusData){
 HWND PluginInfo::nppHandle(){
   return nppData._nppHandle;
 }
+HWND PluginInfo::CurrScintillaHandle(){
+  return nppData._scintillaMainHandle;
+}
 void PluginInfo::setPluginHandle(HWND pHandle){
   _pHandle=pHandle;
 }
@@ -79,6 +82,51 @@ HWND PluginInfo::pluginHandle(){
 }
 
 PluginInfo Plugin;
+
+unsigned int SendScintillaMSG(int msg, unsigned int wParam = 0, int lParam = 0){
+  HWND hwndScintilla = Plugin.CurrScintillaHandle();
+	int (*fn)(void*,int,int,int);
+	fn = (int (__cdecl *)(void *,int,int,int))SendMessage(
+		hwndScintilla,SCI_GETDIRECTFUNCTION,0,0);
+	void * ptr;
+	ptr = (void *)(SendMessage(hwndScintilla,SCI_GETDIRECTPOINTER,0,0));
+  return fn(ptr, msg, wParam, lParam);
+}
+
+
+///Style Helper Function
+unsigned int SetEOLFilledLine(int line, LexAccessor& styler){
+  #ifdef DEBUG
+  dbg << rnwmsg << __func__ << "(" << line << ",...):Entering"  << endl;
+  #endif
+	unsigned int lineend = SendScintillaMSG(SCI_GETLINEENDPOSITION, line, 1);
+	unsigned int result  = SetEOLFilledAt(lineend);
+  #ifdef DEBUG
+  dbg << rnwmsg << __func__ << ":lineend=" << lineend << endl;
+  dbg << rnwmsg << __func__ << ":Leaving("  << result << ")" << endl;
+  #endif
+  return result;
+}
+unsigned int SetEOLFilledAt(unsigned int pos){
+	return SendScintillaMSG(SCI_STYLESETEOLFILLED, pos);
+}
+unsigned int SetEOLFilledAll(LexAccessor& styler){
+  for(int i=0; i<styler.Length();i++)
+    SetEOLFilledAt(i);
+  return 0;
+}
+unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits /* =false */){
+  #ifdef DEBUG
+  dbg << rnwmsg << __func__ << endl;
+  for(int i=0; i<styler.Length();i++){
+    int isfill = SetEOLFilledAt(i);
+    if(isfill != showHits)
+      dbg << rnwmsg << __func__ << ":At " << i << " isfill=" << isfill << endl;
+  }
+  dbg << rnwmsg << __func__ << ":leaving" << endl;
+  #endif
+  return 0;
+}
 }
 using namespace RnwLang;
 

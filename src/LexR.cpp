@@ -86,6 +86,20 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
       << ", " << (initStyle)
       << ") lengthDoc=" << startPos+length
       << endl;
+  dbg << "RnwLang:R  :"      << "Colors:" 
+      << "SCE_R_DEFAULT="    << SCE_R_DEFAULT    << ", "
+      << "SCE_R_COMMENT="    << SCE_R_COMMENT    << ", "
+      << "SCE_R_KWORD="      << SCE_R_KWORD      << ", "
+      << "SCE_R_BASEKWORD="  << SCE_R_BASEKWORD  << ", "
+      << "SCE_R_OTHERKWORD=" << SCE_R_OTHERKWORD << ", "
+      << "SCE_R_NUMBER="     << SCE_R_NUMBER     << ", "
+      << "SCE_R_STRING="     << SCE_R_STRING     << ", "
+      << "SCE_R_STRING2="    << SCE_R_STRING2    << ", "
+      << "SCE_R_OPERATOR="   << SCE_R_OPERATOR   << ", "
+      << "SCE_R_IDENTIFIER=" << SCE_R_IDENTIFIER << ", "
+      << "SCE_R_INFIX="      << SCE_R_INFIX      << ", "
+      << "SCE_R_INFIXEOL="   << SCE_R_INFIXEOL
+      << endl;
   #endif
 	WordList &keywords  = *keywordlists[0];
 	WordList &keywords2 = *keywordlists[1];
@@ -171,6 +185,13 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 				sc.SetState(SCE_R_STRING2);
 			} else if (IsAnOperator(sc.ch)) {
 				sc.SetState(SCE_R_OPERATOR);
+        #ifdef DEBUG
+        char _S_[2]={sc.ch,0};
+        dbg << "RnwLang:R  :Operator '" << &_S_[0] 
+            << "' at:" << sc.currentPos 
+            << " style=" << sc.state
+            << endl;
+        #endif
 			}
 		}
 	}
@@ -198,7 +219,7 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 	int lineCurrent = styler.GetLine(startPos);
 	int levelCurrent = SC_FOLDLEVELBASE;
 	if (lineCurrent > 0)
-		levelCurrent = styler.LevelAt(lineCurrent-1) & SC_FOLDLEVELNUMBERMASK;
+		levelCurrent = styler.LevelAt(lineCurrent-1) >> 16;
 	int levelMinCurrent = levelCurrent;
 	int levelNext = levelCurrent;
 	char chNext = styler[startPos];
@@ -242,7 +263,7 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 			if (foldAtElse) {
 				levelUse = levelMinCurrent;
 			}
-			int lev = levelUse | (levelNext);
+			int lev = levelUse | levelNext << 16;
 			if (visibleChars == 0 && foldCompact)
 				lev |= SC_FOLDLEVELWHITEFLAG;
 			if (levelUse < levelNext)
@@ -251,15 +272,25 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 				styler.SetLevel(lineCurrent, lev);
 			}
 			lineCurrent++;
-			levelMinCurrent = levelCurrent = levelNext;
+			levelCurrent = levelNext;
+			levelMinCurrent = levelCurrent;
 			visibleChars = 0;
 		}
 		if (!isspacechar(ch))
 			visibleChars++;
 	}
+#ifdef DEBUG
+for(int l=styler.GetLine(startPos); l<styler.GetLine(endPos); l++) {
+dbg << "RnwLang:R  :" << __func__
+    << ":level(" << l 
+    << ")=" << hex << styler.LevelAt(l) << dec
+    << endl;
+}
+#endif
 }
 
 // LexerModule lmR(SCLEX_R, ColouriseRDoc, "r", FoldRDoc, RWordLists);
 
 }}}  // end RnwLang::Lexers:R
+
 
