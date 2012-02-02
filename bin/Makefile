@@ -1,11 +1,13 @@
 # Makefile for Notepad++ plugins
 .SUFFIXES: .cpp .cxx
-CC = g++
+
+# use specifically TDM version of minGW
+CC = C:/MinGW64/bin/g++
 RC = windres --target pe-i386
 DEL = rm -f
 all: plugin
 
-#CONTROL Variables
+# CONTROL Variables
 # DEBUG=1
 # UNICODE=1
 
