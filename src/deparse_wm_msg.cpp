@@ -10,6 +10,7 @@ using namespace std;
 using namespace RnwLang::Lexers;
 
 namespace{  // local functions to this file
+#ifndef WM_NULL
 //{ Define windows messages
 int WM_NULL = 0x00;
 int WM_CREATE = 0x01;
@@ -32,9 +33,9 @@ int WM_QUERYOPEN = 0x13;
 int WM_ERASEBKGND = 0x14;
 int WM_SYSCOLORCHANGE = 0x15;
 int WM_ENDSESSION = 0x16;
-int WM_SYSTEMERROR = 0x17;
+//int WM_SYSTEMERROR = 0x17;
 int WM_SHOWWINDOW = 0x18;
-int WM_CTLCOLOR = 0x19;
+//int WM_CTLCOLOR = 0x19;
 int WM_WININICHANGE = 0x1A;
 int WM_SETTINGCHANGE = 0x1A;
 int WM_DEVMODECHANGE = 0x1B;
@@ -149,7 +150,7 @@ int WM_MBUTTONDOWN = 0x207;
 int WM_MBUTTONUP = 0x208;
 int WM_MBUTTONDBLCLK = 0x209;
 int WM_MOUSEWHEEL = 0x20A;
-int WM_MOUSEHWHEEL = 0x20E;
+//int WM_MOUSEHWHEEL = 0x20E;
 
 int WM_PARENTNOTIFY = 0x210;
 int WM_ENTERMENULOOP = 0x211;
@@ -218,8 +219,8 @@ int WM_HANDHELDFIRST = 0x358;
 int WM_HANDHELDLAST = 0x35F;
 int WM_PENWINFIRST = 0x380;
 int WM_PENWINLAST = 0x38F;
-int WM_COALESCE_FIRST = 0x390;
-int WM_COALESCE_LAST = 0x39F;
+//int WM_COALESCE_FIRST = 0x390;
+//int WM_COALESCE_LAST = 0x39F;
 int WM_DDE_FIRST = 0x3E0;
 int WM_DDE_INITIATE = 0x3E0;
 int WM_DDE_TERMINATE = 0x3E1;
@@ -429,12 +430,7 @@ static ismap WindowsMap()
   _STRINGIFY_(WM_PENWINFIRST)
   _STRINGIFY_(WM_PENWINLAST)
   
-  _STRINGIFY_(WM_SYSTEMERROR)
-  _STRINGIFY_(WM_CTLCOLOR)
   _STRINGIFY_(WM_SETTINGCHANGE)
-  _STRINGIFY_(WM_MOUSEHWHEEL)
-  _STRINGIFY_(WM_COALESCE_FIRST)
-  _STRINGIFY_(WM_COALESCE_LAST)
   _STRINGIFY_(WM_DDE_FIRST)
   _STRINGIFY_(WM_DDE_INITIATE)
   _STRINGIFY_(WM_DDE_TERMINATE)
@@ -500,6 +496,7 @@ static ismap StyleMap(){
   return m;
 }
 }
+#endif //WM_NULL
 #ifndef NO_DEPARSE_MSG
 string RnwLang::deparseMsg(int i){
   static MsgMap wmmap = WindowsMap();

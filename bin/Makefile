@@ -62,12 +62,12 @@ PLUGIN_DEF = $(SRC)/Plugin.def
 PLUGIN_OBJECTS = \
 	RnwLang.o \
 	RnwRes.o \
-	LexRnw.o \
-	deparse_wm_msg.o \
-	dbgstream.o \
-	$(LEXERS)
+	$(LEXERS) \
+	LexRnw.o
 $(PLUGIN_OBJECTS): $(SRC)/RnwLang.h
-OBJECTS = $(PLUGIN_OBJECTS) $(LOBJS)
+OBJECTS = \
+	$(LOBJS) \
+	$(PLUGIN_OBJECTS)
 
 vpath %.h   $(SRC) $(SRC)/headers\
             $(SCINTILLA_SRC)/src \
@@ -93,7 +93,8 @@ INCLUDEDIRS = -I $(SCINTILLA_SRC)/include \
 		    
 # http://gcc.gnu.org/onlinedocs/gcc-4.4.3/gcc/Warning-Options.html#Warning-Options
 CHECK_FLAGS  = -Wall -Wextra -Wno-missing-braces -Wno-char-subscripts \
-               -Wno-strict-overflow -pedantic -Wno-unused-parameter
+               -Wno-strict-overflow -pedantic -Wno-unused-parameter \
+               -Wno-missing-field-initializers
 SCI_CXXFLAGS = -DSCI_LEXER
 CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 	$(INCLUDEDIRS) -fno-rtti  \
@@ -102,6 +103,9 @@ CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 # DEBUG
 ifdef DEBUG
 CXXFLAGS=-DDEBUG -g -O0 $(CXXBASEFLAGS)
+PLUGIN_OBJECTS += \
+	deparse_wm_msg.o \
+	dbgstream.o
 else
 CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS)
 STRIPFLAG=-s

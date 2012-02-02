@@ -17,16 +17,17 @@
 // You should have received a copy of the GNU General Public License
 // along with RnwLang.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RnwLang_H
-#define RnwLang_H
+#ifndef RNWLANG_SRC_RnwLang_H
+#define RNWLANG_SRC_RnwLang_H
 
-#if 1 // Includes Section
-
+//{ Includes Section
+  #include <Tchar.h>
   #ifndef _WIN32_WINNT
     #define _WIN32_WINNT 0x0501
   #endif
+  
 
-  // C RunTime Header Files
+  //{ C RunTime Header Files
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
@@ -37,8 +38,8 @@
   #include <time.h>
   #include <sys/types.h>
   #include <sys/stat.h>
-
-  // STL Headers
+  //}
+  //{ STL Headers
   #include <iostream>
   #include <sstream>
   #include <string>
@@ -49,22 +50,12 @@
   #include <algorithm>
   #include <exception>
   #include <string>
-
-  // Windows Header Files
-  #include <WinDef.h>
-
-
+  //}
   #ifdef UNICODE
     #include <wchar.h>
   #endif
-
-  // Notepad++
-  #include "Common.h"
-  #include "Window.h"
-  #include "StaticDialog.h"
-  #include "PluginInterface.h"
-
-  // Scintilla includes
+  //{ Scintilla includes
+  #include "Scintilla.h"
   #include "ILexer.h"
   #include "PropSetSimple.h"
   #include "WordList.h"
@@ -74,14 +65,12 @@
   #include "LexerModule.h"
   #include "StyleContext.h"
   #include "CharacterSet.h"
-
-  // This project Includes
+  //}
+  //{ RnwLang includes
   #include <cassert>
   #include <algorithm>
   #include "unidef.h"
   #include "lexers.h"
-  #include "dbgstream.h"
-  #include "deparse_wm_msg.h"
   
   #define thisfunc __PRETTY_FUNCTION__
   #ifdef UNICODE
@@ -89,47 +78,13 @@
   #else
     #define generic_strncpy_s strncpy_s
   #endif
-
-#endif //*/ end includes/defines section
+  //}
+//} end includes/defines section
 using std::vector;
 using std::string;
 
 namespace RnwLang
 {
-  typedef std::basic_string<TCHAR> generic_string;
-  static const string rnwmsg = "RnwLang:MSG:";
-  static const string rnwerr = "RnwLang:ERROR:";
-	void aboutDlg();
-
-
-  class MenuItem : public FuncItem{
-  public:
-    MenuItem( generic_string name,         /// Item Name
-              PFUNCPLUGINCMD func=NULL,  /// function to execute
-              int cmdID = NULL,
-              bool i2c = false,
-              ShortcutKey * Key = NULL);
-
-  };
-  class PluginInfo{
-  private:
-    PluginInfo(PluginInfo const &);
-    void operator=(PluginInfo const&);
-    vector<MenuItem> MenuItems;
-  protected:
-    NppData nppData;
-    HWND _pHandle;
-  public:
-    PluginInfo();
-    void setInfo(NppData notpadPlusData);
-    FuncItem * getMenuItems();
-    int numMenuItems();
-    HWND nppHandle();
-    HWND pluginHandle();
-    HWND CurrScintillaHandle();
-    void setPluginHandle(HWND);
-  };
-
   namespace Lexers{ namespace Rnw{
 	class LexerRnw : public LexerBase {
   private:
@@ -145,9 +100,10 @@ namespace RnwLang
     void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
  	};
   }} // namespace Lexers::Rnw
-  
-  // PluginInfo Class as a Singeton
-  extern PluginInfo Plugin;
+  #ifdef DEBUG
+  static const string rnwmsg = "RnwLang:MSG:";
+  static const string rnwerr = "RnwLang:ERROR:";
+  #endif
   
   //Styler Functions
   unsigned int SetEOLFilledLine(int line, LexAccessor& styler);
@@ -156,5 +112,5 @@ namespace RnwLang
   unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits = false);
 }
 
-#endif  // RNWLANG_H
+#endif  // RNWLANG_SRC_RNWLANG_H
 
