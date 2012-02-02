@@ -3,20 +3,9 @@
 
 \begin{document}
 some intro information
-<<setup>>=
-y<-1
-@
-
-<<assign>>= comment to begin the code block
-x<-1
-f <- function(){
-  x
+<<setup>>= 
+hw <- function(){
+  print("hello world!")
 }
-<<setup>>
-@ a comment
-
-<<newcode>>= with comment
-something
-<<newcode>>
-something.else
 @
+\end{document}
