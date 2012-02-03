@@ -85,21 +85,36 @@ using std::string;
 
 namespace RnwLang
 {
-  namespace Lexers{ namespace Rnw{
-	class LexerRnw : public LexerBase {
-  private:
-    PropSetSimple R_props, TeX_props, Rnw_props;
-	public:
-		LexerRnw();
-		~LexerRnw();
-    SCI_METHOD int  WordListSet(int n, const char *wl);
-		SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-    SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-		static ILexer* LexerFactory();
-    void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold);
-    void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
- 	};
-  }} // namespace Lexers::Rnw
+  namespace Lexers{  
+    namespace Rnw{
+      class LexerRnw : public LexerBase {
+      private:
+        PropSetSimple R_props, TeX_props, Rnw_props;
+      public:
+        LexerRnw();
+        ~LexerRnw();
+        SCI_METHOD int  WordListSet(int n, const char *wl);
+        SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        static ILexer* LexerFactory();
+        void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold);
+        void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
+      };
+    }  // namespace Rnw
+    namespace R {
+      class LexerR : public LexerBase {
+      private:
+        PropSetSimple props;
+      public:
+        LexerR();
+        ~LexerR();
+        SCI_METHOD int  WordListSet(int n, const char *wl);
+        SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        static ILexer* LexerFactory();
+      };
+    }  // namespace R
+  } // namespace Lexers
   #ifdef DEBUG
   static const string rnwmsg = "RnwLang:MSG:";
   static const string rnwerr = "RnwLang:ERROR:";

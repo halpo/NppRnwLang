@@ -626,9 +626,9 @@ namespace { // fold Functions
         << ")"  << endl;
     #endif
     int prevBlock     = findPrevStartBlockLine(line-1, styler);
-    int startingLevel = styler.LevelAt(prevBlock) & SC_FOLDLEVELNUMBERMASK;
-    styler.SetLevel(line  , startingLevel+1);
-    styler.SetLevel(line+1, startingLevel  );
+    int startingLevel = styler.LevelAt(prevBlock);
+    styler.SetLevel(line  , SC_FOLDLEVELBASE | RNW_FOLD_R);
+    styler.SetLevel(line+1, startingLevel  & SC_FOLDLEVELNUMBERMASK);
     #ifdef DEBUG
     dbg << rnwmsg << " leaving " << __func__ 
         << " prevBlock="  << prevBlock
@@ -703,7 +703,7 @@ ILexer* LexerRnw::LexerFactory() {
     return dynamic_cast<ILexer*>(lex);//new LexerRnw;
   } catch (...) {
     #ifdef DEBUG
-    dbg << rnwerr << thisfunc << (" Unhandled Exception Caught") << endl;
+    dbg << rnwerr << thisfunc << (": Unhandled Exception Caught") << endl;
     #endif
     // Should not throw into caller as may be compiled with different compiler or options
     return 0;
@@ -941,10 +941,13 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
       } 
       else {
         if(fold){
-          R::FoldDoc(i, codeend-i+1, 0, R_words, R_styler);
+          int prevlevel = styler.LevelAt(line-1);
+          styler.SetLevel(line-1, prevlevel << 16);  // bitshift couteracts R bitshift.
+          R::FoldDoc(i, codeend-i+1, R_DEFAULT, R_words, R_styler);
+          styler.SetLevel(line-1, prevlevel);
         } 
         else {  // style
-          R::ColouriseDoc(i, codeend-i, 0, R_words, R_styler);
+          R::ColouriseDoc(i, codeend-i, R_DEFAULT, R_words, R_styler);
         }
       }
       style=RNW_DEFAULT;

@@ -43,6 +43,12 @@ namespace RnwLang
 	void aboutDlg();
 
 
+  class LexerInfo{
+   public:
+    string name;
+    generic_string status;
+    LexerInfo(string n, generic_string s):name(n), status(s){}
+  };
   class MenuItem : public FuncItem{
   public:
     MenuItem( generic_string name,         /// Item Name
@@ -59,6 +65,7 @@ namespace RnwLang
   protected:
     NppData nppData;
     HWND _pHandle;
+    vector<LexerInfo> lexers;
   public:
     PluginInfo();
     void setInfo(NppData notpadPlusData);
@@ -68,14 +75,25 @@ namespace RnwLang
     HWND pluginHandle();
     HWND CurrScintillaHandle();
     void setPluginHandle(HWND);
+    int number_of_lexers(){return lexers.size();}
+    void addLexer(LexerInfo l){lexers.push_back(l);}
+    LexerInfo getLexer(int index){return lexers[index];}
+    static const generic_string PLUGIN_NAME;
+    static const generic_string aboutMenuItem;
+    PluginInfo MakePlugin(){
+      PluginInfo PluginLexerInfo 
+        liRnw("RnwLang", _TEXT("R/Sweave Lexer")),
+        liR( "R Pro", _TEXT("R Professional"));
+      Plugin.addLexer(liRnw);
+      Plugin.addLexer(liR);
+      return Plugin;
+    }
   };
+  const generic_string PluginInfo::PLUGIN_NAME   = _TEXT("&Rnw Lexer");
+  const generic_string PluginInfo::aboutMenuItem = _TEXT("&About R/Sweave");
   // PluginInfo Class as a Singeton
-  PluginInfo Plugin;
+  PluginInfo Plugin = MakePlugin();
 
-static const generic_string PLUGIN_NAME      = _TEXT("&Rnw Lexer");
-static const std::string LEXER_NAME          = "RnwLang";
-static const generic_string LEXER_STATUS_TEXT= _TEXT("R/Sweave Lexer");
-static const generic_string aboutMenuItem    = _TEXT("&About R/Sweave");
 void aboutDlg()
 {
   ::MessageBox(Plugin.nppHandle(),
@@ -265,23 +283,23 @@ EXT_LEXER_DECL int  GetLexerCount() {
   #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
   #endif
-  return 1; 
+  return PluginInfo::number_of_lexers; 
 }
-EXT_LEXER_DECL void GetLexerName(unsigned int /*index*/, char *name, int buflength){
+EXT_LEXER_DECL void GetLexerName(unsigned int index, char *name, int buflength){
   #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
   #endif
 	*name = 0;
 	if (buflength > 0) {
-		strncpy(name, LEXER_NAME.c_str(), buflength);
+		strncpy(name, PluginInfo::LEXER_NAMES[index].c_str(), buflength);
 	}
 }
-EXT_LEXER_DECL void GetLexerStatusText(unsigned int /*Index*/, TCHAR *desc, int buflength){
+EXT_LEXER_DECL void GetLexerStatusText(unsigned int index, TCHAR *desc, int buflength){
   #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
   #endif
 	if (buflength > 0) {
-    _tcsncpy(desc, LEXER_STATUS_TEXT.c_str(), buflength);
+    _tcsncpy(desc, PluginInfo::LEXER_STATUS_TEXT[index].c_str(), buflength);
 	}
 }
 

@@ -29,6 +29,7 @@
 using namespace Scintilla;
 #endif
 
+#include "RnwLang.h"
 #include "lexers.h"
 using namespace RnwLang::Lexers;
 #ifdef DEBUG
@@ -37,6 +38,7 @@ using namespace RnwLang::Lexers;
   using std::endl;
   using std::hex;
   using std::dec;
+  static const string rnwmsg = "RnwLang:R  :";
 #endif
 
 namespace RnwLang{ namespace Lexers{ namespace R {
@@ -265,7 +267,7 @@ void FoldDoc(unsigned int startPos, int length, int, WordList *[],
 			if (foldAtElse) {
 				levelUse = levelMinCurrent;
 			}
-			int lev = levelUse | levelNext << 16;
+			int lev = levelUse | levelNext  << 16;
 			if (visibleChars == 0 && foldCompact)
 				lev |= SC_FOLDLEVELWHITEFLAG;
 			if (levelUse < levelNext)
@@ -292,7 +294,82 @@ dbg << "RnwLang:R  :" << __func__
 }
 
 // LexerModule lmR(SCLEX_R, ColouriseRDoc, "r", FoldRDoc, RWordLists);
-
+//{  Class Functions
+LexerR::LexerR(){
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << __func__ << endl;
+  #endif
+  props.Set("fold.compact", "0");
+  props.Set("fold.at.else", "1");
+}
+LexerR::~LexerR(){
+}
+SCI_METHOD int  LexerR::WordListSet(int n, const char *wl) {
+  #ifdef DEBUG
+  dbg << rnwmsg << __func__
+      << "("  << n
+      << ", " << static_cast<const void*>(wl)
+      << ")"  << endl;
+  #endif
+	if (n < numWordLists) {
+		WordList wlNew;
+		wlNew.Set(wl);
+		if (*keyWordLists[n] != wlNew) {
+			keyWordLists[n]->Set(wl);
+			return 0;
+		}
+	}
+	return -1;
+}
+SCI_METHOD void LexerR::Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess) {
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << __func__ << endl;
+  #endif
+	try {
+    Accessor styler(pAccess,   &props);
+		ColouriseDoc(startPos, length, initStyle, keyWordLists, styler);
+	} catch (...) {
+    #ifdef DEBUG
+    dbg << rnwerr << "Unhandled Exception" << endl;
+    #endif
+		// Should not throw into caller as may be compiled with different compiler or options
+		pAccess->SetErrorStatus(SC_STATUS_FAILURE);
+	}
+}
+SCI_METHOD void LexerR::Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess) {
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << __func__ << endl;
+  #endif
+	try {
+    Accessor styler(pAccess,   &props);
+		FoldDoc(startPos, length, initStyle, keyWordLists, styler);
+	} catch (...) {
+    #ifdef DEBUG
+    dbg << rnwerr << "unhandled execption in " << __func__ << endl; 
+    #endif
+		//! Should not throw into caller as may be compiled with different compiler or options
+		pAccess->SetErrorStatus(SC_STATUS_FAILURE);
+	}
+  #ifdef DEBUG
+  dbg << rnwmsg << "leaving " << __func__ << endl;
+  #endif
+}
+ILexer* LexerR::LexerFactory() {
+  #ifdef DEBUG
+  dbg << rnwmsg << "in " << __func__ << endl;
+  #endif
+  try {
+    LexerR* lex = new LexerR();
+    return dynamic_cast<ILexer*>(lex);
+  } catch (...) {
+    #ifdef DEBUG
+    dbg << rnwerr << __func__ << (": Unhandled Exception Caught") << endl;
+    #endif
+    // Should not throw into caller as may be compiled with different compiler or options
+    return 0;
+  }
+}
+//}
 }}}  // end RnwLang::Lexers:R
 
 
