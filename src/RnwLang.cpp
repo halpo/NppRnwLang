@@ -47,7 +47,11 @@ namespace RnwLang
    public:
     string name;
     generic_string status;
-    LexerInfo(string n, generic_string s):name(n), status(s){}
+    LexerFactoryFunction factory;
+    LexerInfo(string n, generic_string s, LexerFactoryFunction f):name(n), status(s), factory(f){}
+    const char* getName() const {return name.c_str();}
+    const TCHAR* getStatus() const {return status.c_str();}
+    LexerFactoryFunction getFactory() const {return factory;}
   };
   class MenuItem : public FuncItem{
   public:
@@ -59,40 +63,32 @@ namespace RnwLang
   };
   class PluginInfo{
   private:
-    PluginInfo(PluginInfo const &);
-    void operator=(PluginInfo const&);
-    vector<MenuItem> MenuItems;
-  protected:
+    generic_string _name;   // = _TEXT("&Rnw Lexer");
     NppData nppData;
     HWND _pHandle;
-    vector<LexerInfo> lexers;
+    vector<LexerInfo> Lexers;
+    vector<MenuItem> MenuItems;
+    PluginInfo(generic_string name):_name(name){};
+    void addLexer(LexerInfo l){Lexers.push_back(l);}
+    void addMenuItem(MenuItem MI){MenuItems.push_back(MI);}
+  protected:
   public:
-    PluginInfo();
     void setInfo(NppData notpadPlusData);
     FuncItem * getMenuItems();
+    const TCHAR* getName() const {return _name.c_str();}
     int numMenuItems();
     HWND nppHandle();
     HWND pluginHandle();
     HWND CurrScintillaHandle();
     void setPluginHandle(HWND);
-    int number_of_lexers(){return lexers.size();}
-    void addLexer(LexerInfo l){lexers.push_back(l);}
-    LexerInfo getLexer(int index){return lexers[index];}
+    int NLexers(){return Lexers.size();}
+    LexerInfo getLexer(int index){return Lexers[index];}
     static const generic_string PLUGIN_NAME;
     static const generic_string aboutMenuItem;
-    PluginInfo MakePlugin(){
-      PluginInfo PluginLexerInfo 
-        liRnw("RnwLang", _TEXT("R/Sweave Lexer")),
-        liR( "R Pro", _TEXT("R Professional"));
-      Plugin.addLexer(liRnw);
-      Plugin.addLexer(liR);
-      return Plugin;
-    }
+    static PluginInfo& MakePlugin();
   };
-  const generic_string PluginInfo::PLUGIN_NAME   = _TEXT("&Rnw Lexer");
-  const generic_string PluginInfo::aboutMenuItem = _TEXT("&About R/Sweave");
   // PluginInfo Class as a Singeton
-  PluginInfo Plugin = MakePlugin();
+  PluginInfo Plugin = PluginInfo::MakePlugin();
 
 void aboutDlg()
 {
@@ -104,12 +100,12 @@ void aboutDlg()
     TEXT("<- About ->"),
     MB_OK);
 }
-RnwLang::MenuItem::MenuItem(
-              generic_string name /// Item Name
-             ,PFUNCPLUGINCMD func /// = NULL  function to execute
-             ,int cmdID           /// = NULL
-             ,bool i2c            /// = false
-             ,ShortcutKey * Key   /// = NULL
+MenuItem::MenuItem(
+                    generic_string name /// Item Name
+                   ,PFUNCPLUGINCMD func /// = NULL  function to execute
+                   ,int cmdID           /// = NULL
+                   ,bool i2c            /// = false
+                   ,ShortcutKey * Key   /// = NULL
 ){
   _pFunc=(func);
   _cmdID=(cmdID);
@@ -118,13 +114,7 @@ RnwLang::MenuItem::MenuItem(
 	_tcsncpy(_itemName, name.c_str(), nbChar);
 }
 
-PluginInfo::PluginInfo(){
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc << endl;
-  #endif
-  MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
-  MenuItems.push_back(mi_about);
-}
+
 FuncItem * PluginInfo::getMenuItems(){
   return reinterpret_cast<FuncItem*>(&MenuItems[0]);
 }
@@ -149,7 +139,17 @@ void PluginInfo::setPluginHandle(HWND pHandle){
 HWND PluginInfo::pluginHandle(){
   return _pHandle;
 }
-
+PluginInfo& PluginInfo::MakePlugin(){
+  static PluginInfo P(_TEXT("&Rnw Lexer"));
+  MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
+  P.addMenuItem(mi_about);
+  LexerInfo 
+    liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory),
+    liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
+  P.addLexer(liRnw);
+  P.addLexer(liR);
+  return P;
+}
 unsigned int SendScintillaMSG(int msg, unsigned int wParam = 0, int lParam = 0){
   HWND hwndScintilla = Plugin.CurrScintillaHandle();
 	int (*fn)(void*,int,int,int);
@@ -244,7 +244,7 @@ __declspec(dllexport) const TCHAR * getName() {
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
   #endif
-  return PLUGIN_NAME.c_str(); 
+  return Plugin.getName(); 
 }
 void setInfo(NppData notpadPlusData){ 
   #ifdef DEBUG
@@ -283,7 +283,7 @@ EXT_LEXER_DECL int  GetLexerCount() {
   #ifdef DEBUG
   dbg << rnwmsg << thisfunc << endl;
   #endif
-  return PluginInfo::number_of_lexers; 
+  return Plugin.NLexers(); 
 }
 EXT_LEXER_DECL void GetLexerName(unsigned int index, char *name, int buflength){
   #ifdef DEBUG
@@ -291,15 +291,17 @@ EXT_LEXER_DECL void GetLexerName(unsigned int index, char *name, int buflength){
   #endif
 	*name = 0;
 	if (buflength > 0) {
-		strncpy(name, PluginInfo::LEXER_NAMES[index].c_str(), buflength);
+		strncpy(name,Plugin.getLexer(index).getName(), buflength);
 	}
 }
 EXT_LEXER_DECL void GetLexerStatusText(unsigned int index, TCHAR *desc, int buflength){
   #ifdef DEBUG
-  dbg << rnwmsg << thisfunc << endl;
+  dbg << rnwmsg << thisfunc 
+      << "("  << index
+      << ")"  << endl;
   #endif
 	if (buflength > 0) {
-    _tcsncpy(desc, PluginInfo::LEXER_STATUS_TEXT[index].c_str(), buflength);
+    _tcsncpy(desc, Plugin.getLexer(index).getStatus(), buflength);
 	}
 }
 
