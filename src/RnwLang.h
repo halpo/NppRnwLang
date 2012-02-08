@@ -115,10 +115,6 @@ namespace RnwLang
       };
     }  // namespace R
   } // namespace Lexers
-  #ifdef DEBUG
-  static const string rnwmsg = "RnwLang:MSG:";
-  static const string rnwerr = "RnwLang:ERROR:";
-  #endif
   
   //Styler Functions
   unsigned int SetEOLFilledLine(int line, LexAccessor& styler);

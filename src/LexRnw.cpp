@@ -20,12 +20,11 @@
  *  Holds lexer functions for the Rnw R/Sweave Language
  */
 #include "RnwLang.h"
+#include "RnwDebug.h"
 #include <stdexcept>
 #include <iomanip>
-#ifdef DEBUG
-  #include "dbgstream.h"
-  #include "deparse_wm_msg.h"
-#endif
+
+
 using namespace std;
 using namespace RnwLang;
 using namespace RnwLang::Lexers;
@@ -695,9 +694,7 @@ int LexerRnw::WordListSet(int n, const char *wl) {
 	return -1;
 }
 ILexer* LexerRnw::LexerFactory() {
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc << endl;
-  #endif
+  _debugenter_;
   try {
     LexerRnw* lex = new LexerRnw;
     return dynamic_cast<ILexer*>(lex);//new LexerRnw;

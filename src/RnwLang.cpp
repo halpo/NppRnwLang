@@ -17,6 +17,7 @@
 // along with RnwLang.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RnwLang.h"
+#include "RnwDebug.h"
 //{ Windows Header Files
 #include <WinDef.h>
 //}
@@ -27,10 +28,6 @@
 #include "PluginInterface.h"
 //}
 
-#ifdef DEBUG
-  #include "dbgstream.h"
-  #include "deparse_wm_msg.h"
-#endif
 
 #define EXT_LEXER_DECL __declspec( dllexport ) __stdcall
 
@@ -96,7 +93,11 @@ void aboutDlg()
     TEXT("R/Sweave Syntax Plugin\n")
     TEXT("http://github.com/halpo/NppRnwLang\n\n")
     TEXT("               Author: Andrew Redd\n")
-    TEXT("                        (aka halpo)"),
+    TEXT("                        (aka halpo)")
+    #ifdef DEBUG
+    TEXT("\n\nBuilt:"__DATE__" "__TIME__)
+    #endif
+    ,
     TEXT("<- About ->"),
     MB_OK);
 }
@@ -143,13 +144,14 @@ PluginInfo& PluginInfo::MakePlugin(){
   static PluginInfo P(_TEXT("&Rnw Lexer"));
   MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
   P.addMenuItem(mi_about);
-  LexerInfo 
-    liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory),
-    liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
+  LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory);
   P.addLexer(liRnw);
+  LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
   P.addLexer(liR);
   return P;
 }
+
+
 unsigned int SendScintillaMSG(int msg, unsigned int wParam = 0, int lParam = 0){
   HWND hwndScintilla = Plugin.CurrScintillaHandle();
 	int (*fn)(void*,int,int,int);
@@ -241,21 +243,15 @@ __declspec(dllexport) BOOL isUnicode() {
 #endif
 
 __declspec(dllexport) const TCHAR * getName() { 
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc << endl;
-  #endif
+  _debugenter_;
   return Plugin.getName(); 
 }
 void setInfo(NppData notpadPlusData){ 
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << thisfunc << endl;
-  #endif
+  _debugenter_;
   Plugin.setInfo(notpadPlusData); 
 }
 __declspec(dllexport) FuncItem * getFuncsArray(int *nbF){
-  #ifdef DEBUG
-  dbg << rnwmsg << thisfunc << endl;
-  #endif
+  _debugenter_;
 	*nbF = Plugin.numMenuItems();
 	return Plugin.getMenuItems();
 }
@@ -281,7 +277,7 @@ __declspec(dllexport) LRESULT messageProc(
 }
 EXT_LEXER_DECL int  GetLexerCount() { 
   #ifdef DEBUG
-  dbg << rnwmsg << thisfunc << endl;
+  dbg << rnwmsg << thisfunc << ":#lexers=" << Plugin.NLexers() <<  endl;
   #endif
   return Plugin.NLexers(); 
 }
@@ -310,7 +306,7 @@ __declspec( dllexport ) LexerFactoryFunction GetLexerFactory(unsigned int index)
   dbg << rnwmsg << "in " << thisfunc << " index=" << index << endl;
   #endif
 	if (index == 0)
-		return &LexerRnw::LexerFactory;
+		return Plugin.getLexer(index).getFactory();
 	else
 		return 0;
 }

@@ -31,15 +31,10 @@ using namespace Scintilla;
 
 #include "RnwLang.h"
 #include "lexers.h"
+#include "RnwDebug.h"
+#undef rnwmsg
+#define rnwmsg "RnwLang:R  :"
 using namespace RnwLang::Lexers;
-#ifdef DEBUG
-  #include "dbgstream.h"
-  #include <iomanip>
-  using std::endl;
-  using std::hex;
-  using std::dec;
-  static const string rnwmsg = "RnwLang:R  :";
-#endif
 
 namespace RnwLang{ namespace Lexers{ namespace R {
 namespace {  // static functions
@@ -200,6 +195,7 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 		}
 	}
 	sc.Complete();
+  _debugleave_;
 }
 
 
@@ -209,7 +205,7 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 void FoldDoc(unsigned int startPos, int length, int, WordList *[],
               Accessor &styler) {
   #ifdef DEBUG
-  dbg << "RnwLang:R  : " << "R::FoldDoc"
+  _debugenter
       << "("  << startPos
       << ", " << length
       << ", ...)"
@@ -290,27 +286,23 @@ dbg << "RnwLang:R  :" << __func__
     << ")=" << hex << styler.LevelAt(l) << dec
     << endl;
 }
+_debugleave_;
 #endif
 }
 
 // LexerModule lmR(SCLEX_R, ColouriseRDoc, "r", FoldRDoc, RWordLists);
 //{  Class Functions
 LexerR::LexerR(){
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << __func__ << endl;
-  #endif
+  _debugenter_;
   props.Set("fold.compact", "0");
   props.Set("fold.at.else", "1");
+  _debugleave_;
 }
 LexerR::~LexerR(){
+  _debugenter_;
 }
 SCI_METHOD int  LexerR::WordListSet(int n, const char *wl) {
-  #ifdef DEBUG
-  dbg << rnwmsg << __func__
-      << "("  << n
-      << ", " << static_cast<const void*>(wl)
-      << ")"  << endl;
-  #endif
+  _debugenter_;
 	if (n < numWordLists) {
 		WordList wlNew;
 		wlNew.Set(wl);
@@ -322,9 +314,7 @@ SCI_METHOD int  LexerR::WordListSet(int n, const char *wl) {
 	return -1;
 }
 SCI_METHOD void LexerR::Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess) {
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << __func__ << endl;
-  #endif
+  _debugenter_;
 	try {
     Accessor styler(pAccess,   &props);
 		ColouriseDoc(startPos, length, initStyle, keyWordLists, styler);
@@ -337,9 +327,7 @@ SCI_METHOD void LexerR::Lex(unsigned int startPos, int length, int initStyle, ID
 	}
 }
 SCI_METHOD void LexerR::Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess) {
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << __func__ << endl;
-  #endif
+  _debugenter_;
 	try {
     Accessor styler(pAccess,   &props);
 		FoldDoc(startPos, length, initStyle, keyWordLists, styler);
@@ -355,9 +343,7 @@ SCI_METHOD void LexerR::Fold(unsigned int startPos, int length, int initStyle, I
   #endif
 }
 ILexer* LexerR::LexerFactory() {
-  #ifdef DEBUG
-  dbg << rnwmsg << "in " << __func__ << endl;
-  #endif
+  _debugenter_;
   try {
     LexerR* lex = new LexerR();
     return dynamic_cast<ILexer*>(lex);

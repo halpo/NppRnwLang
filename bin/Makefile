@@ -6,10 +6,7 @@ CC = C:/MinGW64/bin/g++
 RC = windres --target pe-i386
 DEL = rm -f
 all: plugin
-
-# CONTROL Variables
-# only supporting unicode
-UNICODE=1
+.PHONY: all unicode plugin clean echo debug objects
 
 SRC = ../src
 
@@ -101,8 +98,9 @@ CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 	-march=i686 -mthreads
 
 # DEBUG
-ifdef DEBUG
-CXXFLAGS=-DDEBUG -g -O0 $(CXXBASEFLAGS)
+DEBUG ?= 0
+ifeq ($(DEBUG),1)
+CXXFLAGS=-DDEBUG -D_DEBUG -g -O0 $(CXXBASEFLAGS)
 PLUGIN_OBJECTS += \
 	deparse_wm_msg.o \
 	dbgstream.o
@@ -111,21 +109,24 @@ CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS)
 STRIPFLAG=-s
 endif
 
+
+
 #UNICODE
-ifdef UNICODE
-CXXFLAGS+=-DUNICODE -D_UNICODE
+UNICODE ?= 1
+ifeq ($(UNICODE), 1)
+CXXFLAGS += -DUNICODE -D_UNICODE
 endif
 
 # exported variables
 export DEBUG
+export _DEBUG
 export UNICODE
 export _UNICODE
 
 ##  RULES  ####################################################################
 #goals
-.PHONY: all unicode plugin clean echo debug objects
-plugin: unicode
-unicode: $(PLUGIN)
+.PHONY:plugin objects
+plugin: $(PLUGIN)
 objects:$(OBJECTS)
 
 .cxx.o:
@@ -145,17 +146,16 @@ sweep:
 clean: sweep
 	-$(DEL) *.exe *.o *.obj *.dll *.res *.map *.d
 clobber:clean
-	cd ..; $(MAKE) --win32 clean
+	cd ..; $(MAKE) clean
 	
 echo:
 	@echo SRC_DIR= $(SRC)
 	@echo OBJECTS= $(OBJECTS)
 	g++ --version
-	@echo $(DEBUG)
-
-#Pass-off rules
-# ../%:
-	# cd .. && $(MAKE) --win32 $*
+	@echo DEBUG= $(DEBUG)
+	@echo UNICODE= $(UNICODE)
+	@echo CXXFLAGS= $(CXXFLAGS)
+	
 	
 #noted rule using dllwrap for definition file.
 RnwLangLib.dll: $(OBJECTS)
