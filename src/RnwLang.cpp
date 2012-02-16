@@ -305,10 +305,10 @@ __declspec( dllexport ) LexerFactoryFunction GetLexerFactory(unsigned int index)
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << " index=" << index << endl;
   #endif
-	if (index == 0)
+	// if (index == 0)
 		return Plugin.getLexer(index).getFactory();
-	else
-		return 0;
+	// else
+		// return 0;
 }
 } // End extern "C"
 

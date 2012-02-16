@@ -104,6 +104,8 @@ void ColouriseDoc(unsigned int startPos, int length, int initStyle, WordList *ke
 	WordList &keywords2 = *keywordlists[1];
 	WordList &keywords3 = *keywordlists[2];
 
+  if ((initStyle < R_DEFAULT) && (initStyle >= R_END))
+    initStyle = SCE_R_DEFAULT;
 
 	// Do not leak onto next line
 	if (initStyle == SCE_R_INFIXEOL)

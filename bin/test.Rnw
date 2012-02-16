@@ -3,9 +3,11 @@
 
 \begin{document}
 some intro information
-<<setup>>= 
+<<setup>>=
 hw <- function(){
   print("hello world!")
 }
+<<new>>=
+x<-1
 @
 \end{document}
