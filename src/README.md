@@ -14,7 +14,7 @@ deparse_wm_msg.\*
 RnwLang.cpp
 : Plugin interface implimented
 
-RnwLang.h
+LexerPlugin.h
 : All plugin header definition and inclusions
 
 LexRnw.cpp

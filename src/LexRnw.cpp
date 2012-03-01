@@ -19,7 +19,7 @@
 /*! @file LexRnw.cpp
  *  Holds lexer functions for the Rnw R/Sweave Language
  */
-#include "RnwLang.h"
+#include "LexerPlugin.h"
 #include "PluginDebug.h"
 #include <stdexcept>
 #include <iomanip>

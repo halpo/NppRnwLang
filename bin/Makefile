@@ -10,9 +10,21 @@ all: plugin
 .PHONY: all unicode plugin clean echo debug objects
 
 SRC = ../src
+LEXERPLUGIN_SRC = ../LexerPlugin
 DEBUG_SRC = ../debug
 PLUGIN = LexRnw.dll
-SCINTILLA_SRC = ../Scintilla
+SCINTILLA_BASE = ../Scintilla
+
+LEXERS = \
+	LexRnw.o \
+	LexR.o   \
+	LexTeX.o
+$(LEXERS):lexers.h
+PLUGIN_OBJECTS = $(LEXERS)
+	
+$(PLUGIN_OBJECTS): LexerPlugin.h
+
+LEXERPLUGIN_OBJS = LexerPlugin.o LexerPluginRes.o
 
 ### SCINTILLA OBJECTS #########
 BASEOBJS = \
@@ -52,42 +64,37 @@ LOBJS = \
 	$(BASEOBJS)	
 ###  End Scintilla objects ###
 
-LEXERS = \
-	LexR.o \
-	LexTeX.o
-$(LEXERS):lexers.h
-PLUGIN_OBJECTS = \
-	RnwLang.o \
-	RnwRes.o \
-	$(LEXERS) \
-	LexRnw.o
-$(PLUGIN_OBJECTS): $(SRC)/RnwLang.h
 OBJECTS = \
 	$(LOBJS) \
-	$(PLUGIN_OBJECTS)
+	$(PLUGIN_OBJECTS) \
+	$(LEXERPLUGIN_OBJS)
 
-vpath %.h   $(SRC) $(SRC)/headers\
-            $(SCINTILLA_SRC)/src \
-            $(SCINTILLA_SRC)/include \
-            $(SCINTILLA_SRC)/lexlib
-vpath %.cpp $(SRC)
-vpath %.cxx $(SCINTILLA_SRC)/src \
-            $(SCINTILLA_SRC)/lexlib \
-            $(SCINTILLA_SRC)/win32
-vpath %.rc $(SRC) $(SCINTILLA_SRC)/win32
+vpath %.h   $(SRC) \
+		  $(LEXERPLUGIN_SRC) $(LEXERPLUGIN_SRC)/headers\
+            $(SCINTILLA_BASE)/src \
+            $(SCINTILLA_BASE)/include \
+            $(SCINTILLA_BASE)/lexlib
+vpath %.cpp $(SRC) $(LEXERPLUGIN_SRC)
+vpath %.cxx $(SCINTILLA_BASE)/src \
+            $(SCINTILLA_BASE)/lexlib \
+            $(SCINTILLA_BASE)/win32
+vpath %.rc $(SRC) $(LEXERPLUGIN_SRC) $(SCINTILLA_BASE)/win32
 
 
 LDFLAGS=-shared -Wl,--enable-runtime-pseudo-reloc-v2 -mwindows -Wl,--add-stdcall-alias
 LIBS=-lstdc++ -limm32 -lole32 -luuid
 # Add -MMD to get dependencies
-INCLUDEDIRS = -I $(SCINTILLA_SRC)/include \
-              -I $(SCINTILLA_SRC)/src \
-		    -I $(SCINTILLA_SRC)/lexlib \
-		    -I $(SRC)/headers 
+INCLUDEDIRS = \
+		    -I $(SRC) \
+		    -I $(LEXERPLUGIN_SRC) \
+		    -I $(LEXERPLUGIN_SRC)/headers \
+              -I $(SCINTILLA_BASE)/include  \
+              -I $(SCINTILLA_BASE)/src      \
+		    -I $(SCINTILLA_BASE)/lexlib
 		    
 # http://gcc.gnu.org/onlinedocs/gcc-4.4.3/gcc/Warning-Options.html#Warning-Options
 CHECK_FLAGS  = -Wall -Wextra -Wno-missing-braces -Wno-char-subscripts \
-               -Wno-strict-overflow -pedantic -Wno-unused-parameter \
+			-Wno-strict-overflow -pedantic -Wno-unused-parameter   \
 			-Wno-missing-field-initializers -Wno-type-limits
 SCI_CXXFLAGS = -DSCI_LEXER
 CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\

@@ -29,7 +29,7 @@
 using namespace Scintilla;
 #endif
 
-#include "RnwLang.h"
+#include "LexerPlugin.h"
 #include "lexers.h"
 #include "PluginDebug.h"
 #undef rnwmsg
