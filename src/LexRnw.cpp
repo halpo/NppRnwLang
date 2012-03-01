@@ -20,7 +20,7 @@
  *  Holds lexer functions for the Rnw R/Sweave Language
  */
 #include "RnwLang.h"
-#include "RnwDebug.h"
+#include "PluginDebug.h"
 #include <stdexcept>
 #include <iomanip>
 
@@ -292,7 +292,7 @@ void StyleCodeInHead(
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc
       << "("    << j << ", " << end
-      << ", "   << deparseStyle(bgstyle) << ")"
+      << ", "   << bgstyle << ")"
       << endl;
   #endif // DEBUG
   StyleContext sc(j, end-j, bgstyle, styler);
@@ -310,7 +310,7 @@ void StyleCodeInHead(
     }
     if(IsAWordStart(sc.ch)){
       #ifdef DEBUG
-      dbg << rnwmsg << "in bgstyle=" << deparseStyle(bgstyle) 
+      dbg << rnwmsg << "in bgstyle=" << bgstyle
           << " usekeys="  << usekeys
           << endl;
       #endif
@@ -477,7 +477,7 @@ void StyleCodeEnd(
     if(sc.state==RNW_DEFAULT) {
       if(sc.ch=='@'  && sc.atLineStart){
         #ifdef DEBUG
-        dbg << rnwmsg << "style @:"<< ctos(sc.ch) << "->" << deparseStyle(RNW_OPERATOR) << endl;
+        dbg << rnwmsg << "style @:"<< ctos(sc.ch) << "->" << RNW_OPERATOR << endl;
         #endif
         sc.SetState(RNW_OPERATOR);
       } else
@@ -585,7 +585,7 @@ namespace { // fold Functions
     int newlevel  = -1;
     #ifdef DEBUG
     dbg << rnwmsg << __func__
-        << ":prevstyle=" << deparseStyle(prevstyle)
+        << ":prevstyle=" << prevstyle
         << ", prevlevel=" << hex << setw(4) << prevlevel << dec
         << endl;
     #endif
@@ -748,7 +748,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
   dbg << rnwmsg << "in " << thisfunc
       << "(startPos=" << startPos 
       << ", length=" << length
-      << ", initStyle=" << deparseStyle(initStyle) << ")"
+      << ", initStyle=" << initStyle << ")"
       << endl;
   #endif // DEBUG
 
@@ -769,7 +769,7 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
   for ( unsigned int i = startPos; i < endDoc; ) {
     #ifdef DEBUG
     dbg << rnwmsg << "Style:loop(" << i << " /" << endDoc 
-                  << "):style=" << deparseStyle(style) << endl;
+                  << "):style=" << style << endl;
     #endif
     uint nextchange = length;
     if (i >= endDoc) break ;

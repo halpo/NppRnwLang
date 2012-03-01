@@ -1,5 +1,4 @@
 #include "deparse_wm_msg.h"
-#include "lexers.h" // for RnwLang enum definitions
 #include <map>
 #include <sstream>
 #define _STRINGIFY_(x) m[x]=#x;
@@ -7,7 +6,6 @@
 
 
 using namespace std;
-using namespace RnwLang::Lexers;
 
 namespace{  // local functions to this file
 #ifndef WM_NULL
@@ -236,6 +234,7 @@ int WM_DDE_LAST = 0x3E8;
 int WM_USER = 0x400;
 int WM_APP = 0x8000;
 //}
+#endif //WM_NULL
 
 typedef map<int,string> ismap;
 static ismap WindowsMap()
@@ -465,53 +464,13 @@ class MsgMap : public ismap
     }
     MsgMap(ismap const &rhs):ismap(rhs){}
 };
-static ismap StyleMap(){
-  using namespace RnwLang;
-  ismap m;
-  _STRINGIFY_(TEX_DEFAULT)
-  _STRINGIFY_(TEX_SPECIAL)
-  _STRINGIFY_(TEX_GROUP)
-  _STRINGIFY_(TEX_SYMBOL)
-  _STRINGIFY_(TEX_COMMAND)
-  _STRINGIFY_(TEX_TEXT)
-  _STRINGIFY_(TEX_RNW_SPECIAL)
-  _STRINGIFY_(RNW_DEFAULT)
-  _STRINGIFY_(RNW_REUSE)
-  _STRINGIFY_(RNW_OPERATOR)
-  _STRINGIFY_(RNW_COMMENT)
-  _STRINGIFY_(RNW_NAME)
-  _STRINGIFY_(RNW_KEYWORD)
-  _STRINGIFY_(R_DEFAULT)
-  _STRINGIFY_(R_COMMENT)
-  _STRINGIFY_(R_KWORD)
-  _STRINGIFY_(R_BASEKWORD)
-  _STRINGIFY_(R_OTHERKWORD)
-  _STRINGIFY_(R_NUMBER)
-  _STRINGIFY_(R_STRING)
-  _STRINGIFY_(R_STRING2)
-  _STRINGIFY_(R_OPERATOR)
-  _STRINGIFY_(R_IDENTIFIER)
-  _STRINGIFY_(R_INFIX)
-  _STRINGIFY_(R_INFIXEOL)
-  return m;
 }
-}
-#endif //WM_NULL
 #ifndef NO_DEPARSE_MSG
 string RnwLang::deparseMsg(int i){
   static MsgMap wmmap = WindowsMap();
   return wmmap[i];
 }
-string RnwLang::deparseStyle(int i){
-  static MsgMap stylemap = StyleMap();
-  return stylemap[i];
-}
-string RnwLang::ctos(char c){
-  stringstream s;
-  char a[2]={c,0};
-  s << reinterpret_cast<char*>(a);
-  return s.str();
-}
+
 #else
 string deparseMsg(int i){return string();}
 #endif // NO_DEPARSE_MSG

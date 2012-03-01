@@ -3,13 +3,14 @@
 
 # use specifically TDM version of minGW
 CC = C:/MinGW64/bin/g++
-RC = windres --target pe-i386
+RC = windres --target pe-i386  
+# the target MUST be pe-i386 for Notepad++ plugins
 DEL = rm -f
 all: plugin
 .PHONY: all unicode plugin clean echo debug objects
 
 SRC = ../src
-
+DEBUG_SRC = ../debug
 PLUGIN = LexRnw.dll
 SCINTILLA_SRC = ../Scintilla
 
@@ -55,7 +56,6 @@ LEXERS = \
 	LexR.o \
 	LexTeX.o
 $(LEXERS):lexers.h
-PLUGIN_DEF = $(SRC)/Plugin.def
 PLUGIN_OBJECTS = \
 	RnwLang.o \
 	RnwRes.o \
@@ -69,10 +69,8 @@ OBJECTS = \
 vpath %.h   $(SRC) $(SRC)/headers\
             $(SCINTILLA_SRC)/src \
             $(SCINTILLA_SRC)/include \
-            $(SCINTILLA_SRC)/lexlib \
-            $(SRC)/dbgstream
-vpath %.cpp $(SRC) \
-            $(SRC)/dbgstream
+            $(SCINTILLA_SRC)/lexlib
+vpath %.cpp $(SRC)
 vpath %.cxx $(SCINTILLA_SRC)/src \
             $(SCINTILLA_SRC)/lexlib \
             $(SCINTILLA_SRC)/win32
@@ -85,13 +83,12 @@ LIBS=-lstdc++ -limm32 -lole32 -luuid
 INCLUDEDIRS = -I $(SCINTILLA_SRC)/include \
               -I $(SCINTILLA_SRC)/src \
 		    -I $(SCINTILLA_SRC)/lexlib \
-		    -I $(SRC)/headers \
-		    -I $(SRC)/dbgstream
+		    -I $(SRC)/headers 
 		    
 # http://gcc.gnu.org/onlinedocs/gcc-4.4.3/gcc/Warning-Options.html#Warning-Options
 CHECK_FLAGS  = -Wall -Wextra -Wno-missing-braces -Wno-char-subscripts \
                -Wno-strict-overflow -pedantic -Wno-unused-parameter \
-               -Wno-missing-field-initializers
+			-Wno-missing-field-initializers -Wno-type-limits
 SCI_CXXFLAGS = -DSCI_LEXER
 CXXBASEFLAGS = -m32 $(CHECK_FLAGS) $(SCI_CXXFLAGS)\
 	$(INCLUDEDIRS) -fno-rtti  \
@@ -104,9 +101,13 @@ CXXFLAGS=-DDEBUG -D_DEBUG -g -O0 $(CXXBASEFLAGS)
 PLUGIN_OBJECTS += \
 	deparse_wm_msg.o \
 	dbgstream.o
+vpath %.h   $(DEBUG_SRC) $(DEBUG_SRC)/dbgstream
+vpath %.cpp $(DEBUG_SRC) $(DEBUG_SRC)/dbgstream
+INCLUDEDIRS += -I $(DEBUG_SRC) -I $(DEBUG_SRC)/dbgstream
+
 else
-CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS)
-STRIPFLAG=-s
+	CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS)
+	STRIPFLAG=-s
 endif
 
 
@@ -147,23 +148,4 @@ clean: sweep
 	-$(DEL) *.exe *.o *.obj *.dll *.res *.map *.d
 clobber:clean
 	cd ..; $(MAKE) clean
-	
-echo:
-	@echo SRC_DIR= $(SRC)
-	@echo OBJECTS= $(OBJECTS)
-	g++ --version
-	@echo DEBUG= $(DEBUG)
-	@echo UNICODE= $(UNICODE)
-	@echo CXXFLAGS= $(CXXFLAGS)
-	
-	
-#noted rule using dllwrap for definition file.
-RnwLangLib.dll: $(OBJECTS)
-	dlltool -l $@ -mi386 $(OBJECTS) --no-export-all-symbols --add-stdcall-underscore 
-dbgtest.exe: ../src/dbgstream/dbgstream.cpp
-	$(CC) -m32 -mwindows -o $@ $(STRIPFLAG) $< $(CXXFLAGS) -DTEST_MAIN
-deparseWM_MSG.exe: deparse_wm_msg.cpp
-	$(CC) -m32 -mwindows -o $@ $(STRIPFLAG) $< $(CXXFLAGS) -DTEST_MAIN
-	
-	
 	

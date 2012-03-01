@@ -4,8 +4,11 @@
 using std::string;
 namespace RnwLang{
 string deparseMsg(int);
-string deparseStyle(int);
-string ctos(char);
+inline string ctos(char c){
+  char a[2]={c,0};
+  string s(reinterpret_cast<char*>(a));
+  return s;
+}
 }
 #endif // DEPARSE_WM_MSG_H_
 

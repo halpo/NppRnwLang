@@ -17,7 +17,7 @@
 // along with RnwLang.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RnwLang.h"
-#include "RnwDebug.h"
+#include "PluginDebug.h"
 //{ Windows Header Files
 #include <WinDef.h>
 //}

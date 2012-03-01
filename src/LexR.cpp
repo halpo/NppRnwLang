@@ -31,7 +31,7 @@ using namespace Scintilla;
 
 #include "RnwLang.h"
 #include "lexers.h"
-#include "RnwDebug.h"
+#include "PluginDebug.h"
 #undef rnwmsg
 #define rnwmsg "RnwLang:R  :"
 using namespace RnwLang::Lexers;
