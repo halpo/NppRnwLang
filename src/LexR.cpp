@@ -293,7 +293,7 @@ _debugleave_;
 }
 
 // LexerModule lmR(SCLEX_R, ColouriseRDoc, "r", FoldRDoc, RWordLists);
-//{  Class Functions
+/*/{  Class Functions
       class LexerR : public LexerBase {
       private:
         PropSetSimple props;
@@ -368,7 +368,7 @@ ILexer* LexerR::LexerFactory() {
     return 0;
   }
 }
-//}
+//}*/
 }}}  // end RnwLang::Lexers:R
 
 
