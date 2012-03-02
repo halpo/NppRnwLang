@@ -2,7 +2,7 @@
 #define DEPARSE_WM_MSG_H_
 #include <string>
 using std::string;
-namespace RnwLang{
+namespace LexerPlugin{
 string deparseMsg(int);
 inline string ctos(char c){
   char a[2]={c,0};

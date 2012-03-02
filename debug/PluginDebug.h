@@ -19,8 +19,6 @@ using std::endl;
 using std::hex;
 using std::dec;
 
-namespace RnwLang{
-}
 #define rnwmsg "RnwLang:MSG:"
 #define rnwerr "RnwLang:ERROR:"
 

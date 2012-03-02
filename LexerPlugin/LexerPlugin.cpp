@@ -18,89 +18,20 @@
 
 #include "LexerPlugin.h"
 #include "PluginDebug.h"
-//{ Windows Header Files
-#include <WinDef.h>
-//}
-//{ Notepad++
-#include "Common.h"
-#include "Window.h"
-#include "StaticDialog.h"
-#include "PluginInterface.h"
-//}
-
 
 #define EXT_LEXER_DECL __declspec( dllexport ) __stdcall
 
 using namespace std;
 using namespace RnwLang::Lexers::Rnw;
 
-namespace RnwLang
+namespace LexerPlugin
 {
-  typedef std::basic_string<TCHAR> generic_string;
-	void aboutDlg();
 
 
-  class LexerInfo{
-   public:
-    string name;
-    generic_string status;
-    LexerFactoryFunction factory;
-    LexerInfo(string n, generic_string s, LexerFactoryFunction f):name(n), status(s), factory(f){}
-    const char* getName() const {return name.c_str();}
-    const TCHAR* getStatus() const {return status.c_str();}
-    LexerFactoryFunction getFactory() const {return factory;}
-  };
-  class MenuItem : public FuncItem{
-  public:
-    MenuItem( generic_string name,         /// Item Name
-              PFUNCPLUGINCMD func=NULL,  /// function to execute
-              int cmdID = NULL,
-              bool i2c = false,
-              ShortcutKey * Key = NULL);
-  };
-  class PluginInfo{
-  private:
-    generic_string _name;   // = _TEXT("&Rnw Lexer");
-    NppData nppData;
-    HWND _pHandle;
-    vector<LexerInfo> Lexers;
-    vector<MenuItem> MenuItems;
-    PluginInfo(generic_string name):_name(name){};
-    void addLexer(LexerInfo l){Lexers.push_back(l);}
-    void addMenuItem(MenuItem MI){MenuItems.push_back(MI);}
-  protected:
-  public:
-    void setInfo(NppData notpadPlusData);
-    FuncItem * getMenuItems();
-    const TCHAR* getName() const {return _name.c_str();}
-    int numMenuItems();
-    HWND nppHandle();
-    HWND pluginHandle();
-    HWND CurrScintillaHandle();
-    void setPluginHandle(HWND);
-    int NLexers(){return Lexers.size();}
-    LexerInfo getLexer(int index){return Lexers[index];}
-    static const generic_string PLUGIN_NAME;
-    static const generic_string aboutMenuItem;
-    static PluginInfo& MakePlugin();
-  };
   // PluginInfo Class as a Singeton
   PluginInfo Plugin = PluginInfo::MakePlugin();
 
-void aboutDlg()
-{
-  ::MessageBox(Plugin.nppHandle(),
-    TEXT("R/Sweave Syntax Plugin\n")
-    TEXT("http://github.com/halpo/NppRnwLang\n\n")
-    TEXT("               Author: Andrew Redd\n")
-    TEXT("                        (aka halpo)")
-    #ifdef DEBUG
-    TEXT("\n\nBuilt:"__DATE__" "__TIME__)
-    #endif
-    ,
-    TEXT("<- About ->"),
-    MB_OK);
-}
+
 MenuItem::MenuItem(
                     generic_string name /// Item Name
                    ,PFUNCPLUGINCMD func /// = NULL  function to execute
@@ -140,16 +71,7 @@ void PluginInfo::setPluginHandle(HWND pHandle){
 HWND PluginInfo::pluginHandle(){
   return _pHandle;
 }
-PluginInfo& PluginInfo::MakePlugin(){
-  static PluginInfo P(_TEXT("&Rnw Lexer"));
-  MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
-  P.addMenuItem(mi_about);
-  LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory);
-  P.addLexer(liRnw);
-  LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
-  P.addLexer(liR);
-  return P;
-}
+
 
 
 unsigned int SendScintillaMSG(int msg, unsigned int wParam = 0, int lParam = 0){
@@ -197,7 +119,7 @@ unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits /* =false */){
   return 0;
 }
 }
-using namespace RnwLang;
+using namespace LexerPlugin;
 
 
 extern "C" { /// All the interface stuff

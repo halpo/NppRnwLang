@@ -66,6 +66,16 @@
   #include "StyleContext.h"
   #include "CharacterSet.h"
   //}
+  //{ Windows Header Files
+    #include <WinDef.h>
+  //}
+  //{ Notepad++
+    #include "Common.h"
+    #include "Window.h"
+    #include "StaticDialog.h"
+    #include "PluginInterface.h"
+  //}
+
   //{ RnwLang includes
   #include <cassert>
   #include <algorithm>
@@ -83,8 +93,64 @@
 using std::vector;
 using std::string;
 
-namespace RnwLang
+namespace LexerPlugin
 {
+  //typedef std::basic_string<TCHAR> generic_string;
+  class LexerInfo{
+   public:
+    string name;
+    generic_string status;
+    LexerFactoryFunction factory;
+    LexerInfo(string n, generic_string s, LexerFactoryFunction f):name(n), status(s), factory(f){}
+    const char* getName() const {return name.c_str();}
+    const TCHAR* getStatus() const {return status.c_str();}
+    LexerFactoryFunction getFactory() const {return factory;}
+  };
+  class MenuItem : public FuncItem{
+  public:
+    MenuItem( generic_string name,         /// Item Name
+              PFUNCPLUGINCMD func=NULL,  /// function to execute
+              int cmdID = NULL,
+              bool i2c = false,
+              ShortcutKey * Key = NULL);
+  };
+  class PluginInfo{
+  private:
+    generic_string _name;   // = _TEXT("&Rnw Lexer");
+    NppData nppData;
+    HWND _pHandle;
+    vector<LexerInfo> Lexers;
+    vector<MenuItem> MenuItems;
+    PluginInfo(generic_string name):_name(name){};
+    void addLexer(LexerInfo l){Lexers.push_back(l);}
+    void addMenuItem(MenuItem MI){MenuItems.push_back(MI);}
+  protected:
+  public:
+    void setInfo(NppData notpadPlusData);
+    FuncItem * getMenuItems();
+    const TCHAR* getName() const {return _name.c_str();}
+    int numMenuItems();
+    HWND nppHandle();
+    HWND pluginHandle();
+    HWND CurrScintillaHandle();
+    void setPluginHandle(HWND);
+    int NLexers(){return Lexers.size();}
+    LexerInfo getLexer(int index){return Lexers[index];}
+    static const generic_string PLUGIN_NAME;
+    static const generic_string aboutMenuItem;
+    static PluginInfo& MakePlugin();
+  };
+  extern PluginInfo Plugin;
+
+  
+ 
+  //Styler Functions
+  unsigned int SetEOLFilledLine(int line, LexAccessor& styler);
+  unsigned int SetEOLFilledAt(unsigned int pos);
+  unsigned int SetEOLFilledAll(LexAccessor& styler);
+  unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits = false);
+}
+namespace RnwLang{
   namespace Lexers{  
     namespace Rnw{
       class LexerRnw : public LexerBase {
@@ -115,13 +181,6 @@ namespace RnwLang
       };
     }  // namespace R
   } // namespace Lexers
-  
-  //Styler Functions
-  unsigned int SetEOLFilledLine(int line, LexAccessor& styler);
-  unsigned int SetEOLFilledAt(unsigned int pos);
-  unsigned int SetEOLFilledAll(LexAccessor& styler);
-  unsigned int CheckEOLFilled(LexAccessor& styler, bool showHits = false);
-}
-
+ }
 #endif  // RNWLANG_SRC_RNWLANG_H
 

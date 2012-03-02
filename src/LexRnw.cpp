@@ -26,11 +26,13 @@
 
 
 using namespace std;
+using namespace LexerPlugin;
 using namespace RnwLang;
 using namespace RnwLang::Lexers;
 
 
 namespace RnwLang { namespace Lexers{ namespace Rnw{
+
 int ScanTo(unsigned int pos, const unsigned int max,  char const * const s, LexAccessor &styler){
   unsigned int i=pos;
   for(; i < max; i++){
@@ -976,3 +978,29 @@ void LexerRnw::Style(unsigned int startPos, int length, int initStyle, IDocument
   #endif
 }
 }}} // end namespace RnwLang::Lexers::Rnw
+
+void aboutDlg()
+{
+  ::MessageBox(Plugin.nppHandle(),
+    TEXT("R/Sweave Syntax Plugin\n")
+    TEXT("http://github.com/halpo/NppRnwLang\n\n")
+    TEXT("               Author: Andrew Redd\n")
+    TEXT("                        (aka halpo)")
+    #ifdef DEBUG
+    TEXT("\n\nBuilt:"__DATE__" "__TIME__)
+    #endif
+    ,
+    TEXT("<- About ->"),
+    MB_OK);
+}
+PluginInfo& PluginInfo::MakePlugin(){
+  static PluginInfo P(_TEXT("&Rnw Lexer"));
+  MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
+  P.addMenuItem(mi_about);
+  LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory);
+  P.addLexer(liRnw);
+  LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
+  P.addLexer(liR);
+  return P;
+}
+

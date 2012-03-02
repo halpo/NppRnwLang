@@ -466,13 +466,12 @@ class MsgMap : public ismap
 };
 }
 #ifndef NO_DEPARSE_MSG
-string RnwLang::deparseMsg(int i){
+string LexerPlugin::deparseMsg(int i){
   static MsgMap wmmap = WindowsMap();
   return wmmap[i];
 }
-
 #else
-string deparseMsg(int i){return string();}
+string LexerPlugin::deparseMsg(int i){return string();}
 #endif // NO_DEPARSE_MSG
 #ifdef TEST_MAIN
 #include <iostream>
