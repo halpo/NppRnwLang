@@ -64,6 +64,7 @@ LOBJS = \
 	$(BASEOBJS)	
 ###  End Scintilla objects ###
 
+
 OBJECTS = \
 	$(LOBJS) \
 	$(PLUGIN_OBJECTS) \
@@ -150,7 +151,7 @@ $(PLUGIN): $(OBJECTS)
 
 .PHONY:clean sweep clobber
 sweep:
-	-$(DEL) *.dll $(PLUGIN_OBJECTS) dbgtest.exe
+	-$(DEL) $(PLUGIN) $(PLUGIN_OBJECTS) $(LEXERPLUGIN_OBJS)
 clean: sweep
 	-$(DEL) *.exe *.o *.obj *.dll *.res *.map *.d
 clobber:clean

@@ -32,6 +32,20 @@ using namespace RnwLang::Lexers;
 
 
 namespace RnwLang { namespace Lexers{ namespace Rnw{
+class LexerRnw : public LexerBase {
+private:
+  PropSetSimple R_props, TeX_props, Rnw_props;
+public:
+  LexerRnw();
+  ~LexerRnw();
+  SCI_METHOD int  WordListSet(int n, const char *wl);
+  SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+  SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+  static ILexer* LexerFactory();
+  void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold);
+  void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
+};
+
 
 int ScanTo(unsigned int pos, const unsigned int max,  char const * const s, LexAccessor &styler){
   unsigned int i=pos;
@@ -999,8 +1013,8 @@ PluginInfo& PluginInfo::MakePlugin(){
   P.addMenuItem(mi_about);
   LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory);
   P.addLexer(liRnw);
-  LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
-  P.addLexer(liR);
+  // LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
+  // P.addLexer(liR);
   return P;
 }
 

@@ -294,6 +294,17 @@ _debugleave_;
 
 // LexerModule lmR(SCLEX_R, ColouriseRDoc, "r", FoldRDoc, RWordLists);
 //{  Class Functions
+      class LexerR : public LexerBase {
+      private:
+        PropSetSimple props;
+      public:
+        LexerR();
+        ~LexerR();
+        SCI_METHOD int  WordListSet(int n, const char *wl);
+        SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
+        static ILexer* LexerFactory();
+      };
 LexerR::LexerR(){
   _debugenter_;
   props.Set("fold.compact", "0");
