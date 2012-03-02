@@ -81,6 +81,7 @@
   #include <algorithm>
   #include "unidef.h"
   #include "lexers.h"
+  #include "PluginDebug.h"
   
   #define thisfunc __PRETTY_FUNCTION__
   #ifdef UNICODE
@@ -142,6 +143,20 @@ namespace LexerPlugin
   };
   extern PluginInfo Plugin;
 
+  template<class Lexer>
+  ILexer* LexerFactory() {
+    _debugenter_;
+    try {
+      Lexer* lex = new Lexer;
+      return dynamic_cast<ILexer*>(lex);//new LexerRnw;
+    } catch (...) {
+      #ifdef DEBUG
+      dbg << rnwerr << thisfunc << (": Unhandled Exception Caught") << endl;
+      #endif
+      // Should not throw into caller as may be compiled with different compiler or options
+      return 0;
+    }
+  }
   
  
   //Styler Functions

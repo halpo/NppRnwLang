@@ -41,7 +41,6 @@ public:
   SCI_METHOD int  WordListSet(int n, const char *wl);
   SCI_METHOD void Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
   SCI_METHOD void Fold(unsigned int startPos, int length, int initStyle, IDocument *pAccess);
-  static ILexer* LexerFactory();
   void Style(unsigned int startPos, int length, int initStyle, IDocument* pAccess, bool fold);
   void FoldByLine( int startLine , int endLine , int initStyle , IDocument* pAccess );
 };
@@ -709,19 +708,6 @@ int LexerRnw::WordListSet(int n, const char *wl) {
 	}
 	return -1;
 }
-ILexer* LexerRnw::LexerFactory() {
-  _debugenter_;
-  try {
-    LexerRnw* lex = new LexerRnw;
-    return dynamic_cast<ILexer*>(lex);//new LexerRnw;
-  } catch (...) {
-    #ifdef DEBUG
-    dbg << rnwerr << thisfunc << (": Unhandled Exception Caught") << endl;
-    #endif
-    // Should not throw into caller as may be compiled with different compiler or options
-    return 0;
-  }
-}
 void SCI_METHOD LexerRnw::Lex(unsigned int startPos, int length, int initStyle, IDocument *pAccess) {
   #ifdef DEBUG
   dbg << rnwmsg << "in " << thisfunc << endl;
@@ -1011,7 +997,7 @@ PluginInfo& PluginInfo::MakePlugin(){
   static PluginInfo P(_TEXT("&Rnw Lexer"));
   MenuItem mi_about(_TEXT("&About LexRnwer"), &aboutDlg);
   P.addMenuItem(mi_about);
-  LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &Lexers::Rnw::LexerRnw::LexerFactory);
+  LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &LexerFactory<RnwLang::Lexers::Rnw::LexerRnw>);
   P.addLexer(liRnw);
   // LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
   // P.addLexer(liR);
