@@ -80,8 +80,9 @@
   #include <cassert>
   #include <algorithm>
   #include "unidef.h"
-  #include "lexers.h"
+  #ifdef DEBUG
   #include "PluginDebug.h"
+  #endif  // DEBUG
   
   #define thisfunc __PRETTY_FUNCTION__
   #ifdef UNICODE

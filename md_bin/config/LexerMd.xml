@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<NotepadPlus>
+    <Languages>
+        <Language name="Markdown" ext="md" commentStart="&lt;!--" commentEnd="--&gt;"/>
+    </Languages>
+    <LexerStyles>
+      <!-- ext is the "user defined" one that you set within Notepad++. -->
+      <!--
+        font styles are:
+          0=nothing
+      -->
+      <LexerType name="Markdown" desc="Markdown" excluded="no" ext="md">
+        <WordStype Name="MARKDOWN_DEFAULT"    styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_LINE_BEGIN" styleID="1"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_STRONG1"    styleID="2"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_STRONG2"    styleID="3"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_EM1"        styleID="4"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_EM2"        styleID="5"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER1"    styleID="6"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER2"    styleID="7"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER3"    styleID="8"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER4"    styleID="9"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER5"    styleID="10" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HEADER6"    styleID="11" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_PRECHAR"    styleID="12" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_ULIST_ITEM" styleID="13" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_OLIST_ITEM" styleID="14" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_BLOCKQUOTE" styleID="15" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_STRIKEOUT"  styleID="16" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_HRULE"      styleID="17" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_LINK"       styleID="18" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_CODE"       styleID="19" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_CODE2"      styleID="20" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        <WordStype Name="MARKDOWN_CODEBK"     styleID="21" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+      </LexerType>
+	</LexerStyles>
+</NotepadPlus>
+

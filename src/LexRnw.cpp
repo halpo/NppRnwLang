@@ -21,6 +21,7 @@
  */
 #include "LexerPlugin.h"
 #include "PluginDebug.h"
+#include "lexers.h"
 #include <stdexcept>
 #include <iomanip>
 
@@ -999,8 +1000,6 @@ PluginInfo& PluginInfo::MakePlugin(){
   P.addMenuItem(mi_about);
   LexerInfo liRnw("RnwLang", _TEXT("R/Sweave Lexer"), &LexerFactory<RnwLang::Lexers::Rnw::LexerRnw>);
   P.addLexer(liRnw);
-  // LexerInfo liR(    "R Pro", _TEXT("R Professional"), &Lexers::R::LexerR::LexerFactory);
-  // P.addLexer(liR);
   return P;
 }
 

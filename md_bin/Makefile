@@ -1,4 +1,4 @@
-# Makefile for Notepad++ plugins
+# Makefile for Markdown Lexer Port
 
 # use specifically TDM version of minGW
 CC = C:/MinGW64/bin/g++
@@ -8,13 +8,13 @@ DEL = rm -f
 all: plugin
 .PHONY: all unicode plugin clean echo debug objects
 
-SRC = ../src
-PLUGIN = LexRnw.dll
+SRC = ../md_src
+PLUGIN = LexerMd.dll
 BIN_DIR = .
 
-LEXERS = LexRnw.o LexR.o LexTeX.o
-PLUGIN_OBJECTS = $(LEXERS)
-$(PLUGIN_OBJECTS):$(SRC)/lexers.h
+LEXERS = LexMarkdown.o
+PLUGIN_OBJECTS = LexerMd.o $(LEXERS)
+$(PLUGIN_OBJECTS): $(SRC)/LexerMd.h
 
 include ../LexerPlugin/LexerPlugin.mk
 include ../LexerPlugin/test.mk

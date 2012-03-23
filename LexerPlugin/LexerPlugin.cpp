@@ -22,7 +22,6 @@
 #define EXT_LEXER_DECL __declspec( dllexport ) __stdcall
 
 using namespace std;
-using namespace RnwLang::Lexers::Rnw;
 
 namespace LexerPlugin
 {
